@@ -1,0 +1,627 @@
+<title>Selvi Filament Machine</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a workshop build sheet — single 1080px column, sticky section rail, drawings framed like plates */
+:root{
+  --bg:#eef1ee; --paper:#ffffff; --ink:#18211f; --muted:#5b6865; --line:#cfd8d4;
+  --accent:#0b7a75;       /* PET-bottle teal */
+  --accent-soft:#d7ece9;
+  --heat:#c2362f;         /* hot side / 12V+ */
+  --warn:#9a6a00; --warn-soft:#fbf0d2;
+  --ok:#2c7a3f; --ok-soft:#dcefe0;
+  --wire-l:#8a4b1d; --wire-n:#2f5fb3; --wire-e:#3f8a3a; --wire-neg:#18211f;
+  --f-display:"Barlow Condensed","Arial Narrow",Arial,sans-serif;
+  --f-body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#111816; --paper:#18211f; --ink:#e4ebe8; --muted:#9aa8a4; --line:#2e3a37;
+  --accent:#4cc2b9; --accent-soft:#163633; --heat:#ff6f61; --warn:#e5b54a; --warn-soft:#332a12;
+  --ok:#6cc47f; --ok-soft:#173222; --wire-l:#d98a4e; --wire-n:#7aa2ff; --wire-e:#7cc777; --wire-neg:#e4ebe8; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#111816; --paper:#18211f; --ink:#e4ebe8; --muted:#9aa8a4; --line:#2e3a37;
+  --accent:#4cc2b9; --accent-soft:#163633; --heat:#ff6f61; --warn:#e5b54a; --warn-soft:#332a12;
+  --ok:#6cc47f; --ok-soft:#173222; --wire-l:#d98a4e; --wire-n:#7aa2ff; --wire-e:#7cc777; --wire-neg:#e4ebe8; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:15px/1.6 var(--f-body);padding-inline:16px;padding-block:0 64px}
+.wrap{max-width:1080px;margin:0 auto}
+h1,h2,h3{font-family:var(--f-display);font-weight:700;letter-spacing:.01em;text-wrap:balance;line-height:1.1;margin:0}
+h1{font-size:clamp(40px,7vw,68px);text-transform:uppercase}
+h2{font-size:32px;text-transform:uppercase}
+h3{font-size:21px;font-weight:600}
+p{margin:0;max-width:68ch}
+a{color:var(--accent);text-underline-offset:2px}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.mono,code{font-family:var(--f-mono);font-size:.92em}
+.eyebrow{font:500 12px/1 var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+header.top{padding-block:40px 24px;display:grid;gap:18px}
+.lede{font-size:17px;color:var(--muted)}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.kpi{background:var(--paper);padding:14px 16px;display:grid;gap:4px}
+.kpi b{font:600 28px/1 var(--f-display);font-variant-numeric:tabular-nums}
+.kpi span{font-size:13px;color:var(--muted)}
+nav.rail{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--bg);border-bottom:1px solid var(--line);margin-inline:-16px;padding:10px 16px;overflow-x:auto;white-space:nowrap}
+nav.rail .wrap{display:flex;gap:6px}
+nav.rail a{font:500 13px/1 var(--f-mono);text-decoration:none;color:var(--ink);padding:7px 10px;border:1px solid var(--line);border-radius:4px;background:var(--paper)}
+nav.rail a:hover{border-color:var(--accent);color:var(--accent)}
+section{padding-block:44px 8px;display:grid;gap:18px;scroll-margin-top:56px}
+.sec-head{display:grid;gap:6px;border-top:2px solid var(--ink);padding-top:10px}
+.plate{background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:18px;min-width:0}
+figure{margin:0;display:grid;gap:10px}
+figcaption{font-size:13px;color:var(--muted);max-width:80ch}
+.svgbox{overflow-x:auto}
+.svgbox svg{display:block;min-width:720px;width:100%;height:auto;color:var(--ink)}
+.callouts{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.callout{border:1px solid var(--line);border-left:4px solid var(--warn);background:var(--paper);border-radius:4px;padding:14px 16px;display:grid;gap:6px;min-width:0}
+.callout.crit{border-left-color:var(--heat)}
+.callout.info{border-left-color:var(--accent)}
+.callout h3{font-size:19px}
+.callout p{font-size:14px}
+/* BOM */
+.bomtools{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between}
+.budget{flex:1 1 320px;display:grid;gap:6px}
+.bar{height:14px;background:var(--accent-soft);border-radius:3px;position:relative;overflow:hidden}
+.bar i{position:absolute;inset:0 auto 0 0;background:var(--accent);border-radius:3px;transition:width .25s}
+.bar.over i{background:var(--heat)}
+.budget .row{display:flex;justify-content:space-between;font:500 14px var(--f-mono);font-variant-numeric:tabular-nums;gap:12px;flex-wrap:wrap}
+.legend{display:flex;gap:10px;flex-wrap:wrap;font-size:12px;color:var(--muted)}
+.tag{display:inline-block;font:500 11px/1 var(--f-mono);padding:4px 6px;border-radius:3px;letter-spacing:.03em;white-space:nowrap}
+.t-ver{background:var(--ok-soft);color:var(--ok)}
+.t-snip{background:var(--warn-soft);color:var(--warn)}
+.t-est{background:var(--accent-soft);color:var(--accent)}
+.t-opt{border:1px dashed var(--muted);color:var(--muted)}
+.tablebox{overflow-x:auto;border:1px solid var(--line);border-radius:6px;background:var(--paper)}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{text-align:left;vertical-align:top;padding:10px 12px;border-bottom:1px solid var(--line)}
+th{font:500 11px/1.2 var(--f-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);background:var(--bg);position:sticky;top:0}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums;font-family:var(--f-mono);white-space:nowrap}
+tr.cat td{background:var(--accent-soft);font:600 15px var(--f-display);letter-spacing:.06em;text-transform:uppercase;color:var(--ink)}
+tr.off td:not(.ctl){opacity:.45}
+tr.off td.num{text-decoration:line-through}
+.part{font-weight:600}
+.spec{color:var(--muted);font-size:13px}
+.note{font-size:12.5px;color:var(--muted);margin-top:4px}
+.links{display:grid;gap:3px;font-size:13px}
+.ctl label{display:flex;gap:6px;align-items:center;font-size:12px;color:var(--muted);white-space:nowrap;cursor:pointer}
+.ctl input{accent-color:var(--accent);width:16px;height:16px}
+.stores{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}
+.store{border:1px solid var(--line);border-radius:4px;padding:10px 12px;background:var(--paper);display:grid;gap:2px}
+.store b{font:600 20px/1 var(--f-display);font-variant-numeric:tabular-nums}
+.store span{font-size:12px;color:var(--muted)}
+/* steps */
+ol.steps{list-style:none;counter-reset:s;margin:0;padding:0;display:grid;gap:12px}
+ol.steps li{counter-increment:s;display:grid;grid-template-columns:44px 1fr;gap:14px;background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:14px 16px}
+ol.steps li::before{content:counter(s,decimal-leading-zero);font:700 26px/1 var(--f-display);color:var(--accent)}
+ol.steps li > div{display:grid;gap:6px;min-width:0}
+ol.steps ul{margin:0;padding-left:18px;display:grid;gap:3px;font-size:14px}
+/* calc */
+.calcs{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
+.calc{display:grid;gap:12px}
+.field{display:grid;grid-template-columns:1fr 110px;gap:10px;align-items:center;font-size:14px}
+.field input{font:500 15px var(--f-mono);padding:7px 9px;border:1px solid var(--line);border-radius:4px;background:var(--bg);color:var(--ink);width:100%}
+.out{border-top:1px dashed var(--line);padding-top:10px;display:grid;gap:4px}
+.out .big{font:700 34px/1 var(--f-display);color:var(--accent);font-variant-numeric:tabular-nums}
+.out small{color:var(--muted);font-size:12.5px}
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
+ul.tight{margin:0;padding-left:18px;display:grid;gap:5px}
+.term td:first-child{font-family:var(--f-mono);white-space:nowrap}
+.swatch{display:inline-block;width:22px;height:4px;border-radius:2px;vertical-align:middle;margin-right:6px}
+footer{margin-top:40px;font-size:12.5px;color:var(--muted);border-top:1px solid var(--line);padding-top:14px;display:grid;gap:6px}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;scroll-behavior:auto!important}}
+@media (max-width:560px){.field{grid-template-columns:1fr 92px} ol.steps li{grid-template-columns:1fr} h2{font-size:27px}}
+</style>
+
+<div class="wrap">
+<header class="top">
+  <div class="eyebrow">DharaLabs · Project Selvi · Build sheet v1 · 3 Oct 2026</div>
+  <h1>Selvi Filament Machine</h1>
+  <p class="lede">An Indian-sourced PETamentor2 build. The bottle is cut into a strip, pulled through a 215 °C nozzle where it folds into 1.75 mm filament, and wound onto a spool, all in one continuous pass. Every part is from an Indian store, and the total stays under ₹5,000. Your 3D-printed parts are already done.</p>
+  <div class="kpis" aria-label="Key figures">
+    <div class="kpi"><b id="kTotal">₹—</b><span>Parts + shipping (live)</span></div>
+    <div class="kpi"><b id="kLeft">₹—</b><span>Left of ₹5,000 budget</span></div>
+    <div class="kpi"><b>12 V · 60 W</b><span>Single DC rail; heater uses 40 W of it</span></div>
+    <div class="kpi"><b>~23 g</b><span>Filament per 1.5 L bottle (estimate)</span></div>
+  </div>
+</header>
+</div>
+
+<nav class="rail" aria-label="Sections"><div class="wrap">
+  <a href="#checks">Before ordering</a><a href="#how">How it works</a><a href="#bom">Parts &amp; prices</a><a href="#wiring">Circuit</a><a href="#terminals">Terminal map</a><a href="#build">Assembly</a><a href="#calc">Calculators</a><a href="#tune">First run &amp; tuning</a><a href="#trouble">Troubleshooting</a><a href="#safety">Safety</a><a href="#next">v2 &amp; open questions</a>
+</div></nav>
+
+<div class="wrap">
+
+<!-- CHECKS -->
+<section id="checks">
+  <div class="sec-head"><div class="eyebrow">Read first</div><h2>Four checks before you order</h2></div>
+  <div class="callouts">
+    <div class="callout crit"><h3>1 · Don't buy the REX-C100 "kit"</h3><p>Amazon's REX-C100 + K-type + 40A SSR kits ship an <b>SSR-40DA</b>, which switches AC loads only. Your heater runs on 12 V DC, so a DA relay will never turn it on. Buy the controller on its own and a <b>DD</b> (DC→DC) relay.</p></div>
+    <div class="callout crit"><h3>2 · Model code must contain "V"</h3><p>On <span class="mono">REX-C100FK02-<b>V</b>*AN</span>, the V means it drives an SSR. An <b>M</b> means a relay output. Check the listing title or photo before you pay.</p></div>
+    <div class="callout"><h3>3 · Measure your printed puller mount</h3><p>Your parts are already printed, so the motor has to fit them. If <span class="mono">Puller – motor mount</span> has a round ~37 mm bore, buy the <b>JGB37-520 7 RPM</b> (default below). If it has a rectangular worm-gearbox pocket, it's the JGY-370 remix, so switch to the <b>JGY-370 10 RPM</b>. The <span class="mono">Cutter – motor bracket</span> should take a 12 × 10 mm N20.</p></div>
+    <div class="callout info"><h3>4 · Microswitches, not tact buttons</h3><p>The <span class="mono">MS switch bracket</span> and the plus/minus buttons press two 3-pin <b>KW11-3Z</b> microswitches (20 × 10 mm). Their NO/NC contacts reverse the blade-height motor, and 4-pin tact switches can't do that.</p></div>
+  </div>
+</section>
+
+<!-- HOW -->
+<section id="how">
+  <div class="sec-head"><div class="eyebrow">Mechanism</div><h2>One pass, four stations</h2></div>
+  <figure class="plate">
+    <div class="svgbox">
+    <svg viewBox="0 0 980 300" role="img" aria-label="Process flow: bottle on cutter, strip pulled through heated nozzle, filament wound on motorised spool which also does the pulling.">
+      <defs>
+        <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker>
+        <marker id="arA" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="var(--accent)"/></marker>
+      </defs>
+      <!-- bottle -->
+      <g fill="none" stroke="currentColor" stroke-width="1.6">
+        <rect x="40" y="70" width="120" height="150" rx="18" fill="var(--accent-soft)"/>
+        <path d="M70 70 L80 40 H120 L130 70" fill="var(--accent-soft)"/>
+        <rect x="88" y="26" width="24" height="14" rx="2" fill="var(--paper)"/>
+      </g>
+      <text x="100" y="250" text-anchor="middle" font-size="13" fill="currentColor" font-weight="600">1 · Bottle on cutter</text>
+      <text x="100" y="268" text-anchor="middle" font-size="11.5" fill="var(--muted)">bottom cut flat, label off</text>
+      <!-- blade -->
+      <g>
+        <rect x="190" y="110" width="90" height="70" rx="4" fill="var(--paper)" stroke="currentColor" stroke-width="1.6"/>
+        <path d="M200 160 L270 132" stroke="var(--heat)" stroke-width="3"/>
+        <text x="235" y="126" text-anchor="middle" font-size="11" fill="currentColor">9 mm blade</text>
+        <path d="M235 180 V205" stroke="currentColor" stroke-width="1.4" marker-end="url(#ar)"/>
+        <text x="235" y="222" text-anchor="middle" font-size="11" fill="var(--muted)">height = strip width</text>
+        <text x="235" y="236" text-anchor="middle" font-size="11" fill="var(--muted)">N20 → worm → M8 screw</text>
+      </g>
+      <text x="235" y="268" text-anchor="middle" font-size="13" fill="currentColor" font-weight="600">2 · Cut</text>
+      <!-- strip -->
+      <path d="M160 145 H190" stroke="var(--accent)" stroke-width="7"/>
+      <path d="M280 145 H410" stroke="var(--accent)" stroke-width="7"/>
+      <text x="345" y="132" text-anchor="middle" font-size="11.5" fill="currentColor">strip ≈ 7–8 mm × 0.3 mm</text>
+      <!-- nozzle -->
+      <g>
+        <rect x="410" y="105" width="110" height="80" rx="3" fill="var(--paper)" stroke="currentColor" stroke-width="1.6"/>
+        <rect x="420" y="115" width="90" height="16" rx="8" fill="none" stroke="var(--heat)" stroke-width="1.6"/>
+        <text x="465" y="127" text-anchor="middle" font-size="10" fill="var(--heat)">40 W heater</text>
+        <circle cx="498" cy="168" r="5" fill="var(--heat)"/>
+        <text x="462" y="172" text-anchor="middle" font-size="10" fill="currentColor">K probe</text>
+        <path d="M520 138 L548 141 V149 L520 152 Z" fill="var(--warn-soft)" stroke="currentColor" stroke-width="1.4"/>
+      </g>
+      <text x="470" y="210" text-anchor="middle" font-size="11" fill="var(--muted)">215 °C · bore 1.8 mm</text>
+      <text x="470" y="268" text-anchor="middle" font-size="13" fill="currentColor" font-weight="600">3 · Fold &amp; form</text>
+      <!-- filament -->
+      <path d="M548 145 H700" stroke="var(--accent)" stroke-width="3"/>
+      <text x="624" y="132" text-anchor="middle" font-size="11.5" fill="currentColor">Ø1.75 mm filament</text>
+      <text x="624" y="170" text-anchor="middle" font-size="11" fill="var(--muted)">optional 4010 fan cools it</text>
+      <!-- spool -->
+      <g>
+        <circle cx="780" cy="145" r="72" fill="var(--paper)" stroke="currentColor" stroke-width="1.6"/>
+        <circle cx="780" cy="145" r="32" fill="var(--accent-soft)" stroke="currentColor" stroke-width="1.4"/>
+        <circle cx="780" cy="145" r="6" fill="currentColor"/>
+        <path d="M700 145 Q 720 115 748 113" fill="none" stroke="var(--accent)" stroke-width="3"/>
+        <path d="M830 82 A 80 80 0 0 1 858 140" fill="none" stroke="var(--accent)" stroke-width="1.6" marker-end="url(#arA)"/>
+      </g>
+      <text x="780" y="246" text-anchor="middle" font-size="13" fill="currentColor" font-weight="600">4 · Pull + wind</text>
+      <text x="780" y="264" text-anchor="middle" font-size="11" fill="var(--muted)">JGB37 7 RPM · PWM speed knob</text>
+      <text x="780" y="280" text-anchor="middle" font-size="11" fill="var(--muted)">the spool's pull drives the whole line</text>
+      <path d="M900 145 H955" stroke="currentColor" stroke-width="1.2" stroke-dasharray="3 3"/>
+      <text x="930" y="135" text-anchor="middle" font-size="11" fill="var(--muted)">pull</text>
+      <path d="M955 120 V170" stroke="currentColor" stroke-width="0"/>
+    </svg>
+    </div>
+    <figcaption>Nothing pushes the strip. The spool motor pulls the filament, the filament drags the strip through the nozzle, and the strip unwinds the bottle against the blade. That's why one speed knob (puller PWM) and one temperature (REX-C100) set the whole process.</figcaption>
+  </figure>
+</section>
+
+<!-- BOM -->
+<section id="bom">
+  <div class="sec-head"><div class="eyebrow">Bill of materials · prices checked 3 Oct 2026</div><h2>Parts, links &amp; live total</h2></div>
+  <p><b>Untick</b> anything you already own, and it drops out of the total. Optional rows start unticked; tick them to add them. Prices include GST except where noted. Stock moves fast on these stores, so each row has a backup link.</p>
+  <div class="bomtools plate">
+    <div class="budget">
+      <div class="row"><span>Total <b id="bTotal">₹0</b></span><span>Budget ₹5,000</span></div>
+      <div class="bar" id="bBar"><i style="width:0%"></i></div>
+      <div class="row"><span id="bLeft" class="mono">—</span><span id="bCount" class="mono">—</span></div>
+    </div>
+    <div class="legend">
+      <span><span class="tag t-ver">VERIFIED</span> price read on the product page</span>
+      <span><span class="tag t-snip">LISTED</span> from the store's listing data, open to confirm</span>
+      <span><span class="tag t-est">ESTIMATE</span> local shop or estimate</span>
+    </div>
+  </div>
+  <div class="tablebox">
+    <table id="bomTable">
+      <thead><tr><th>Part &amp; spec</th><th class="num">Qty</th><th class="num">₹</th><th>Buy</th><th>Status</th><th>Include</th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+  <div class="eyebrow">Order list by store</div>
+  <div class="stores" id="stores"></div>
+  <p class="note">Bengaluru tip: Probots offers same-day pickup (Nagarabhavi and Koramangala), so the motor, inlet, cord and screws carry no shipping. Zbotic ships free above ₹999. Order the REX-C100 and SSR first, because they're the parts most likely to go out of stock.</p>
+</section>
+
+<!-- WIRING -->
+<section id="wiring">
+  <div class="sec-head"><div class="eyebrow">Electrical · drawing A of 2</div><h2>Circuit: mains, PSU &amp; heater loop</h2></div>
+  <figure class="plate">
+    <div class="svgbox">
+    <svg viewBox="0 0 940 450" role="img" aria-label="Mains enters an IEC inlet with fuse and switch and feeds the 12 V SMPS and the REX-C100. The REX-C100 drives the input of an SSR-40DD. The SSR switches the low side of the 12 V cartridge heater. A K-type thermocouple in the heater block returns to REX terminals 9 and 10.">
+      <defs><marker id="ar2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker></defs>
+      <rect x="8" y="8" width="250" height="434" rx="6" fill="none" stroke="var(--heat)" stroke-dasharray="6 5" stroke-width="1.2"/>
+      <text x="20" y="430" font-size="12" fill="var(--heat)" font-weight="600">230 V AC zone · enclosed, earthed</text>
+      <!-- IEC -->
+      <rect x="20" y="50" width="140" height="120" rx="4" fill="var(--paper)" stroke="currentColor" stroke-width="1.5"/>
+      <text x="90" y="40" text-anchor="middle" font-size="13" font-weight="600" fill="currentColor">IEC C14 inlet</text>
+      <text x="30" y="84" font-size="11.5" fill="currentColor">E</text><text x="30" y="114" font-size="11.5" fill="currentColor">L</text><text x="30" y="144" font-size="11.5" fill="currentColor">N</text>
+      <text x="90" y="104" text-anchor="middle" font-size="10.5" fill="var(--muted)">switch +</text>
+      <text x="90" y="118" text-anchor="middle" font-size="10.5" fill="var(--muted)">T2A fuse</text>
+      <!-- SMPS -->
+      <rect x="300" y="30" width="180" height="110" rx="4" fill="var(--paper)" stroke="currentColor" stroke-width="1.5"/>
+      <text x="390" y="22" text-anchor="middle" font-size="13" font-weight="600" fill="currentColor">SMPS 12 V 5 A</text>
+      <text x="308" y="54" font-size="11.5" fill="currentColor">⏚</text><text x="308" y="84" font-size="11.5" fill="currentColor">L</text><text x="308" y="114" font-size="11.5" fill="currentColor">N</text>
+      <text x="470" y="64" text-anchor="end" font-size="11.5" fill="currentColor">V+</text><text x="470" y="104" text-anchor="end" font-size="11.5" fill="currentColor">V−</text>
+      <!-- REX -->
+      <rect x="300" y="240" width="180" height="180" rx="4" fill="var(--paper)" stroke="currentColor" stroke-width="1.5"/>
+      <text x="390" y="232" text-anchor="middle" font-size="13" font-weight="600" fill="currentColor">REX-C100 (FK02-V)</text>
+      <text x="308" y="274" font-size="11.5" fill="currentColor">1 AC</text><text x="308" y="304" font-size="11.5" fill="currentColor">2 AC</text>
+      <text x="470" y="274" text-anchor="end" font-size="11.5" fill="currentColor">4 SSR +</text><text x="470" y="304" text-anchor="end" font-size="11.5" fill="currentColor">5 SSR −</text>
+      <text x="470" y="379" text-anchor="end" font-size="11.5" fill="currentColor">9 TC</text><text x="470" y="399" text-anchor="end" font-size="11.5" fill="currentColor">10 TC</text>
+      <text x="390" y="345" text-anchor="middle" font-size="10.5" fill="var(--muted)">PID · K-type · 0–400 °C</text>
+      <!-- mains wires -->
+      <g fill="none" stroke-width="2.2">
+        <path d="M160 80 H190 V50 H300" stroke="var(--wire-e)"/>
+        <path d="M160 110 H220 V80 H300" stroke="var(--wire-l)"/>
+        <path d="M220 110 V270 H300" stroke="var(--wire-l)"/>
+        <path d="M160 140 H250 V110 H300" stroke="var(--wire-n)"/>
+        <path d="M250 140 V300 H300" stroke="var(--wire-n)"/>
+      </g>
+      <circle cx="220" cy="110" r="4" fill="var(--wire-l)"/><circle cx="250" cy="140" r="4" fill="var(--wire-n)"/>
+      <text x="196" y="198" font-size="10.5" fill="var(--wire-l)" transform="rotate(-90 212 198)">L</text>
+      <text x="256" y="220" font-size="10.5" fill="var(--wire-n)">N</text>
+      <!-- 12V + rail with fuse -->
+      <path d="M480 60 H585" stroke="var(--heat)" stroke-width="2.4" fill="none"/>
+      <rect x="585" y="50" width="60" height="20" rx="10" fill="var(--paper)" stroke="var(--heat)" stroke-width="1.6"/>
+      <text x="615" y="64" text-anchor="middle" font-size="10.5" fill="var(--heat)">5 A T</text>
+      <path d="M645 60 H860 V220" stroke="var(--heat)" stroke-width="2.4" fill="none"/>
+      <text x="740" y="52" text-anchor="middle" font-size="11" fill="var(--heat)">+12 V rail → also drawing B</text>
+      <!-- V- -->
+      <path d="M480 100 H760 V270 H730" stroke="var(--wire-neg)" stroke-width="2.4" fill="none"/>
+      <text x="620" y="94" text-anchor="middle" font-size="11" fill="currentColor">0 V / GND → also drawing B</text>
+      <!-- SSR -->
+      <rect x="580" y="240" width="150" height="110" rx="4" fill="var(--paper)" stroke="currentColor" stroke-width="1.5"/>
+      <text x="655" y="232" text-anchor="middle" font-size="13" font-weight="600" fill="currentColor">SSR-40DD</text>
+      <text x="588" y="274" font-size="11.5" fill="currentColor">IN+ (3)</text><text x="588" y="304" font-size="11.5" fill="currentColor">IN− (4)</text>
+      <text x="722" y="274" text-anchor="end" font-size="11.5" fill="currentColor">OUT −</text><text x="722" y="334" text-anchor="end" font-size="11.5" fill="currentColor">OUT +</text>
+      <text x="655" y="342" text-anchor="middle" font-size="10" fill="var(--muted)">DC→DC</text>
+      <!-- REX to SSR -->
+      <path d="M480 270 H580" stroke="var(--accent)" stroke-width="2" fill="none"/>
+      <path d="M480 300 H580" stroke="currentColor" stroke-width="2" fill="none"/>
+      <text x="530" y="262" text-anchor="middle" font-size="10.5" fill="var(--accent)">~12 V drive</text>
+      <!-- heater block -->
+      <rect x="790" y="220" width="120" height="200" rx="4" fill="var(--warn-soft)" stroke="currentColor" stroke-width="1.5"/>
+      <text x="850" y="212" text-anchor="middle" font-size="13" font-weight="600" fill="currentColor">Heater block</text>
+      <rect x="805" y="250" width="90" height="22" rx="11" fill="var(--paper)" stroke="var(--heat)" stroke-width="1.6"/>
+      <text x="850" y="265" text-anchor="middle" font-size="10.5" fill="var(--heat)">12 V 40 W</text>
+      <path d="M860 220 V250" stroke="var(--heat)" stroke-width="2.4"/>
+      <path d="M820 272 V330 H790" stroke="currentColor" stroke-width="2" fill="none"/>
+      <path d="M790 330 H730" stroke="currentColor" stroke-width="2.2" fill="none"/>
+      <circle cx="850" cy="385" r="7" fill="var(--heat)"/>
+      <text x="850" y="410" text-anchor="middle" font-size="10.5" fill="currentColor">K bead</text>
+      <path d="M843 380 H800 M843 390 H800" stroke="var(--warn)" stroke-width="1.6"/>
+      <path d="M480 375 H790" stroke="var(--warn)" stroke-width="2" fill="none"/>
+      <path d="M480 395 H790" stroke="var(--warn)" stroke-width="2" fill="none" stroke-dasharray="5 3"/>
+      <text x="635" y="368" text-anchor="middle" font-size="10.5" fill="var(--warn)">K-type + (yellow*) · − (red*) — keep 30 mm from mains</text>
+      <text x="745" y="322" text-anchor="middle" font-size="10" fill="currentColor">heater −</text>
+    </svg>
+    </div>
+    <figcaption>The SSR switches the heater's <b>low side</b>: +12 V goes straight to the heater, and the SSR connects the heater's other lead to 0 V. Dots mark joins, and wires that cross without a dot aren't connected. *Thermocouple colours vary by maker. If the reading <i>drops</i> as the block heats, swap 9 and 10. Polarity is also printed on the REX side label, so trust the label over this drawing.</figcaption>
+  </figure>
+
+  <div class="sec-head"><div class="eyebrow">Electrical · drawing B of 2</div><h2>Circuit: puller, blade height &amp; fan</h2></div>
+  <figure class="plate">
+    <div class="svgbox">
+    <svg viewBox="0 0 940 360" role="img" aria-label="12 V rail feeds: a rocker switch then the 1203B PWM controller driving the JGB37 puller motor; two KW11 microswitches wired as an H-bridge driving the N20 blade-height motor; and an optional 4010 fan.">
+      <path d="M40 40 H900" stroke="var(--heat)" stroke-width="2.6"/>
+      <text x="40" y="28" font-size="12" fill="var(--heat)" font-weight="600">+12 V (after 5 A fuse)</text>
+      <path d="M40 320 H900" stroke="var(--wire-neg)" stroke-width="2.6"/>
+      <text x="40" y="344" font-size="12" fill="currentColor" font-weight="600">0 V (SMPS V−)</text>
+      <!-- rocker -->
+      <circle cx="120" cy="40" r="4" fill="var(--heat)"/>
+      <path d="M120 40 V78" stroke="var(--heat)" stroke-width="2"/>
+      <circle cx="120" cy="80" r="3" fill="none" stroke="currentColor" stroke-width="1.5"/>
+      <path d="M120 80 L138 106" stroke="currentColor" stroke-width="2"/>
+      <circle cx="120" cy="110" r="3" fill="none" stroke="currentColor" stroke-width="1.5"/>
+      <text x="145" y="92" font-size="11" fill="currentColor">KCD1 rocker</text>
+      <text x="145" y="106" font-size="10" fill="var(--muted)">start / stop pull</text>
+      <path d="M120 113 V140 H200" stroke="var(--heat)" stroke-width="2" fill="none"/>
+      <!-- PWM -->
+      <rect x="200" y="115" width="150" height="95" rx="4" fill="var(--paper)" stroke="currentColor" stroke-width="1.5"/>
+      <text x="275" y="107" text-anchor="middle" font-size="13" font-weight="600" fill="currentColor">PWM 1203B</text>
+      <text x="208" y="144" font-size="11" fill="currentColor">IN+</text><text x="208" y="184" font-size="11" fill="currentColor">IN−</text>
+      <text x="342" y="144" text-anchor="end" font-size="11" fill="currentColor">M+</text><text x="342" y="184" text-anchor="end" font-size="11" fill="currentColor">M−</text>
+      <circle cx="275" cy="165" r="12" fill="none" stroke="var(--accent)" stroke-width="1.6"/><path d="M275 165 L283 156" stroke="var(--accent)" stroke-width="1.6"/>
+      <text x="275" y="200" text-anchor="middle" font-size="9.5" fill="var(--accent)">speed knob</text>
+      <path d="M200 180 H170 V320" stroke="var(--wire-neg)" stroke-width="2" fill="none"/>
+      <circle cx="170" cy="320" r="4" fill="var(--wire-neg)"/>
+      <!-- puller motor -->
+      <path d="M350 140 H420 M350 180 H420" stroke="currentColor" stroke-width="2"/>
+      <rect x="420" y="115" width="110" height="95" rx="6" fill="var(--accent-soft)" stroke="currentColor" stroke-width="1.5"/>
+      <circle cx="475" cy="152" r="18" fill="var(--paper)" stroke="currentColor" stroke-width="1.5"/><text x="475" y="157" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor">M</text>
+      <text x="475" y="190" text-anchor="middle" font-size="10.5" fill="currentColor">JGB37-520</text><text x="475" y="203" text-anchor="middle" font-size="10" fill="var(--muted)">7 RPM puller</text>
+      <!-- fan -->
+      <circle cx="575" cy="40" r="4" fill="var(--heat)"/>
+      <path d="M575 40 V235" stroke="var(--heat)" stroke-width="2"/>
+      <rect x="548" y="235" width="54" height="40" rx="4" fill="var(--paper)" stroke="currentColor" stroke-width="1.4" stroke-dasharray="4 3"/>
+      <text x="575" y="259" text-anchor="middle" font-size="10.5" fill="currentColor">4010 fan</text>
+      <path d="M575 275 V320" stroke="var(--wire-neg)" stroke-width="2"/>
+      <circle cx="575" cy="320" r="4" fill="var(--wire-neg)"/>
+      <!-- H-bridge -->
+      <rect x="620" y="140" width="80" height="80" rx="4" fill="var(--paper)" stroke="currentColor" stroke-width="1.5"/>
+      <text x="660" y="176" text-anchor="middle" font-size="11" font-weight="600" fill="currentColor">SW +</text><text x="660" y="192" text-anchor="middle" font-size="9.5" fill="var(--muted)">KW11-3Z</text>
+      <text x="655" y="153" text-anchor="end" font-size="9.5" fill="currentColor">NO</text><text x="655" y="215" text-anchor="end" font-size="9.5" fill="currentColor">NC</text>
+      <path d="M660 40 V140" stroke="var(--heat)" stroke-width="2"/><circle cx="660" cy="40" r="4" fill="var(--heat)"/>
+      <path d="M660 220 V320" stroke="var(--wire-neg)" stroke-width="2"/><circle cx="660" cy="320" r="4" fill="var(--wire-neg)"/>
+      <path d="M700 180 H730" stroke="var(--accent)" stroke-width="2"/><text x="712" y="172" text-anchor="middle" font-size="9.5" fill="var(--accent)">COM</text>
+      <rect x="730" y="155" width="70" height="50" rx="5" fill="var(--accent-soft)" stroke="currentColor" stroke-width="1.5"/>
+      <text x="765" y="177" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor">M</text><text x="765" y="194" text-anchor="middle" font-size="9.5" fill="currentColor">N20 300 RPM</text>
+      <path d="M800 180 H830" stroke="var(--accent)" stroke-width="2"/><text x="818" y="172" text-anchor="middle" font-size="9.5" fill="var(--accent)">COM</text>
+      <rect x="830" y="140" width="80" height="80" rx="4" fill="var(--paper)" stroke="currentColor" stroke-width="1.5"/>
+      <text x="870" y="176" text-anchor="middle" font-size="11" font-weight="600" fill="currentColor">SW −</text><text x="870" y="192" text-anchor="middle" font-size="9.5" fill="var(--muted)">KW11-3Z</text>
+      <text x="885" y="153" font-size="9.5" fill="currentColor">NO</text><text x="885" y="215" font-size="9.5" fill="currentColor">NC</text>
+      <path d="M870 40 V140" stroke="var(--heat)" stroke-width="2"/><circle cx="870" cy="40" r="4" fill="var(--heat)"/>
+      <path d="M870 220 V320" stroke="var(--wire-neg)" stroke-width="2"/><circle cx="870" cy="320" r="4" fill="var(--wire-neg)"/>
+      <text x="765" y="255" text-anchor="middle" font-size="10.5" fill="var(--muted)">blade height</text>
+      <text x="765" y="270" text-anchor="middle" font-size="10" fill="var(--muted)">rest: both NC → motor braked</text>
+    </svg>
+    </div>
+    <figcaption>At rest, both motor leads sit on 0 V through the NC contacts, so the N20 is braked and holds the blade height. Pressing <b>+</b> moves one lead to +12 V and the blade travels one way. Pressing <b>−</b> reverses it. Pressing both just brakes the motor, so nothing shorts. No driver board is needed. Solder a 100 nF ceramic capacitor across each motor's terminals to cut the electrical noise that can upset the REX reading.</figcaption>
+  </figure>
+</section>
+
+<!-- TERMINALS -->
+<section id="terminals">
+  <div class="sec-head"><div class="eyebrow">Point-to-point</div><h2>Terminal map &amp; wire sizes</h2></div>
+  <div class="tablebox">
+    <table class="term">
+      <thead><tr><th>From</th><th>To</th><th>Wire</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>IEC L (after switch + fuse)</td><td>SMPS L · REX 1</td><td><span class="swatch" style="background:var(--wire-l)"></span>0.75 mm² brown</td><td>Ferrules on every screw terminal. Fuse: T2A slow-blow.</td></tr>
+        <tr><td>IEC N</td><td>SMPS N · REX 2</td><td><span class="swatch" style="background:var(--wire-n)"></span>0.75 mm² blue</td><td>REX-C100 runs on 100–240 V AC. Don't feed it 12 V.</td></tr>
+        <tr><td>IEC E</td><td>SMPS ⏚</td><td><span class="swatch" style="background:var(--wire-e)"></span>0.75 mm² green</td><td>Earth the metal SMPS case. Never skip this.</td></tr>
+        <tr><td>SMPS V+</td><td>5 A fuse → +12 V rail</td><td>18 AWG red silicone</td><td>Feeds the heater, rocker/PWM, microswitch NOs and fan.</td></tr>
+        <tr><td>SMPS V−</td><td>0 V rail · SSR OUT− · PWM IN− · NCs · fan −</td><td>18 AWG black</td><td>Single star point at the SMPS V− screw.</td></tr>
+        <tr><td>REX 4 (+)</td><td>SSR IN+ (3)</td><td>22 AWG</td><td>About 12 V DC drive. A DD relay accepts 3–32 V.</td></tr>
+        <tr><td>REX 5 (−)</td><td>SSR IN− (4)</td><td>22 AWG</td><td></td></tr>
+        <tr><td>+12 V rail</td><td>Heater lead A</td><td>18 AWG silicone</td><td>The heater draws 3.3 A. Use silicone wire for the last 15 cm near the block.</td></tr>
+        <tr><td>Heater lead B</td><td>SSR OUT+</td><td>18 AWG silicone</td><td>Current flows in at OUT+ and out at OUT−.</td></tr>
+        <tr><td>SSR OUT−</td><td>0 V rail</td><td>18 AWG black</td><td></td></tr>
+        <tr><td>K-probe + / −</td><td>REX 9 / 10 (check label)</td><td>Probe's own lead</td><td>Don't extend it with copper wire. If it's too short, buy a longer probe.</td></tr>
+        <tr><td>+12 V → rocker → PWM IN+</td><td>PWM M+ / M− → JGB37</td><td>22 AWG</td><td>Swap M+/M− if the spool turns the wrong way.</td></tr>
+        <tr><td>+12 V → both KW11 NO</td><td>KW11 COM → N20 leads</td><td>22 AWG</td><td>Both NCs go to 0 V. If + and − feel backwards, swap the N20 leads.</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="note">Power budget: heater 3.3 A + puller ~0.3 A running + N20 ~0.1 A + fan 0.1 A ≈ 3.8 A, inside the SMPS's 5 A. Motor stall currents can add 1 A briefly, which is why the 12 V 10 A SMPS (+₹300) is the first upgrade to buy if you have money left over.</p>
+</section>
+
+<!-- BUILD -->
+<section id="build">
+  <div class="sec-head"><div class="eyebrow">Sequence</div><h2>Assembly, in this order</h2></div>
+  <ol class="steps">
+    <li><div><h3>Drill the nozzle to 1.8 mm</h3><ul><li>Start from the 1.2 mm Volcano nozzle (much easier than 0.4 mm). Clamp it in a vice, never in your hand.</li><li>Use a pin vise or a drill on its slowest speed with a drop of oil. Go through in 3–4 pecks and clear the brass chips each time.</li><li>Lightly chamfer the <i>entry</i> side so the strip folds smoothly. Keep the exit edge sharp.</li></ul></div></li>
+    <li><div><h3>Build the hot end</h3><ul><li>Screw the nozzle into the V6 block. Slide the 40 W cartridge into the 6 mm bore and lock it with the block's grub/clamp screw.</li><li>Put the K-type bead in the 3 mm sensor hole, or under the M3 clamp screw, and hold it with Kapton. Good bead contact is what keeps the temperature steady.</li><li>Mount the block on your printed <span class="mono">Thermocontroller</span> part with M3 screws and a <b>≥5 mm air gap</b>. PLA softens at about 60 °C, so the block must never touch plastic.</li></ul></div></li>
+    <li><div><h3>Base, cutter and puller</h3><ul><li>Lay out the printed parts on a 450 × 140 mm ply or MDF board in a straight line: cutter → hot end → spool. Fix them with wood screws.</li><li>Cutter gearbox: two M8 × 35 bolts and M3 screws. Grease the worm with Vaseline, as the original build does.</li><li>Fit the N20 in the cutter motor bracket and the JGB37 in the puller mount. Snap two 9 mm blade segments into the holders.</li></ul></div></li>
+    <li><div><h3>Mains wiring, then test with nothing connected</h3><ul><li>Wire IEC → SMPS → REX following drawing A. Close the cover before you plug in.</li><li>Switch on and measure SMPS V+ to V− with your multimeter. Expect 12.0 V; trim with the SMPS pot if it's off. The REX display should light up.</li></ul></div></li>
+    <li><div><h3>Heater loop</h3><ul><li>Connect REX 4/5 → SSR input and the heater through the SSR. Set SV = 100 °C first.</li><li>The SSR LED should come on and the reading should rise. If it falls, swap the thermocouple leads. At 100 °C, confirm the block holds steady before going higher.</li></ul></div></li>
+    <li><div><h3>Motors and switches</h3><ul><li>Wire drawing B. Turn the PWM knob to minimum, flip the rocker, and raise speed until the spool turns slowly in the winding direction.</li><li>Press <b>+</b> and <b>−</b> and confirm the blade moves both ways. Stop before the blade holder hits either end.</li></ul></div></li>
+    <li><div><h3>Set the strip width</h3><ul><li>Measure the bottle wall (see Calculators) and set the blade height to the calculated width, usually about 7–8 mm. Check it with a ruler on a test cut.</li></ul></div></li>
+    <li><div><h3>First pull</h3><ul><li>Prepare the bottle: remove the label, scrub off the glue with warm soapy water, and cut the bottom off flat. Dented bottles give uneven strips.</li><li>Cut 30 cm of strip by hand, taper the tip to a point, push it through the hot nozzle (215 °C) and tie it to the spool. Start the puller slowly.</li></ul></div></li>
+  </ol>
+</section>
+
+<!-- CALC -->
+<section id="calc">
+  <div class="sec-head"><div class="eyebrow">Engineering numbers</div><h2>Calculators</h2></div>
+  <div class="calcs">
+    <div class="plate calc">
+      <h3>Strip width</h3>
+      <p class="note" style="margin:0">Matches the strip's cross-section to the filament's: w = π·d²/4 ÷ t. Measure the wall away from the ribs.</p>
+      <div class="field"><label for="cT">Bottle wall thickness (mm)</label><input id="cT" type="number" step="0.01" min="0.1" max="1" value="0.30"></div>
+      <div class="field"><label for="cD">Target diameter (mm)</label><input id="cD" type="number" step="0.05" min="1" max="3" value="1.75"></div>
+      <div class="out"><span class="eyebrow">Set blade height to</span><span class="big" id="oW">—</span><small id="oWn">—</small></div>
+    </div>
+    <div class="plate calc">
+      <h3>Line speed &amp; bottle yield</h3>
+      <p class="note" style="margin:0">Line speed is set by the spool, and it rises as filament builds up on the hub.</p>
+      <div class="field"><label for="cHub">Spool hub diameter (mm)</label><input id="cHub" type="number" step="1" min="20" max="200" value="60"></div>
+      <div class="field"><label for="cRpm">Spool speed (RPM)</label><input id="cRpm" type="number" step="0.5" min="0.5" max="20" value="5"></div>
+      <div class="field"><label for="cBd">Bottle diameter (mm)</label><input id="cBd" type="number" step="1" min="40" max="150" value="88"></div>
+      <div class="field"><label for="cBh">Usable straight height (mm)</label><input id="cBh" type="number" step="5" min="20" max="400" value="200"></div>
+      <div class="out"><span class="eyebrow">Result</span><span class="big" id="oS">—</span><small id="oY">—</small></div>
+    </div>
+  </div>
+</section>
+
+<!-- TUNE -->
+<section id="tune">
+  <div class="sec-head"><div class="eyebrow">Process window</div><h2>First run &amp; tuning</h2></div>
+  <div class="two">
+    <div class="plate">
+      <h3>Starting settings</h3>
+      <div class="tablebox" style="margin-top:10px">
+      <table><thead><tr><th>Setting</th><th>Start</th><th>Range</th></tr></thead><tbody>
+        <tr><td>Nozzle temperature (SV)</td><td class="mono">215 °C</td><td class="mono">200–240 °C</td></tr>
+        <tr><td>Nozzle bore</td><td class="mono">1.8 mm</td><td class="mono">1.75–1.9 mm</td></tr>
+        <tr><td>Strip width</td><td class="mono">from calculator</td><td class="mono">±0.5 mm</td></tr>
+        <tr><td>Spool speed</td><td class="mono">~3–4 RPM</td><td class="mono">2–7 RPM</td></tr>
+      </tbody></table></div>
+      <p class="note">These are starting points taken from the reference builds (the Tylman Design video runs at 200 °C). Tune them on your own bottles and change one variable at a time.</p>
+    </div>
+    <div class="plate">
+      <h3>REX-C100 setup</h3>
+      <ul class="tight" style="margin-top:10px">
+        <li>At power-up the display flashes the input type and range. Confirm <b>K</b> and <b>0–400</b>.</li>
+        <li>Set SV with the arrow keys to 215.</li>
+        <li><b>Autotune:</b> hold <b>SET</b> about 3 s to enter the menu, step with SET to <span class="mono">AT</span>, set it to 1 and exit. The AT LED blinks for 10–20 minutes while it learns the block. Run it with the block mounted and the fan in its final position.</li>
+        <li>Menus differ slightly between clones. If yours doesn't match, the sheet in the box wins.</li>
+        <li>Aim for ±2 °C at a steady state. If it swings ±10 °C, improve the bead contact and run AT again.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- TROUBLE -->
+<section id="trouble">
+  <div class="sec-head"><div class="eyebrow">Symptom → cause → fix</div><h2>Troubleshooting</h2></div>
+  <div class="tablebox"><table>
+    <thead><tr><th>Symptom</th><th>Likely cause</th><th>Fix</th></tr></thead>
+    <tbody>
+      <tr><td>Heater never warms; REX OUT LED is on</td><td>DA relay instead of DD, or the SSR output is reversed</td><td>Use an SSR-xxDD, with current entering OUT+</td></tr>
+      <tr><td>Reading drops as the block heats</td><td>Thermocouple polarity is reversed</td><td>Swap the wires on 9 and 10</td></tr>
+      <tr><td>Display shows HHHH / −−−− / blinking</td><td>Probe open circuit, or the wrong input type</td><td>Check the probe, and confirm K input in the menu</td></tr>
+      <tr><td>Temperature swings ±10 °C</td><td>Poor bead contact, or AT not run</td><td>Kapton the bead tight, then run AT</td></tr>
+      <tr><td>Filament snaps at the nozzle</td><td>Too cold, pulling too fast, or a nicked strip edge</td><td>+5 °C, slow the puller, change the blade</td></tr>
+      <tr><td>Filament brown, sticky or bubbly</td><td>Too hot or too slow; PET is degrading</td><td>−5 to −10 °C, speed up a little</td></tr>
+      <tr><td>Diameter under 1.70 mm</td><td>Strip too narrow, or pulling too fast</td><td>Widen the strip by 0.5 mm, or slow down</td></tr>
+      <tr><td>Diameter over 1.85 mm, or seam open</td><td>Strip too wide, or bore too big</td><td>Narrow the strip; try a new 1.75 mm bore</td></tr>
+      <tr><td>Strip width wanders</td><td>Dented or oval bottle, or bottom cut not square</td><td>Dip the bottle in hot water to reshape it, and recut the bottom</td></tr>
+      <tr><td>SMPS clicks or resets when the motor starts</td><td>Overload during motor stall plus heater</td><td>Upgrade to the 12 V 10 A SMPS</td></tr>
+      <tr><td>REX reading jumps when motors run</td><td>Motor noise on the thermocouple</td><td>100 nF across the motors; route the TC lead away from motor wires</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- SAFETY -->
+<section id="safety">
+  <div class="sec-head"><div class="eyebrow">Non-negotiable</div><h2>Safety</h2></div>
+  <div class="callouts">
+    <div class="callout crit"><h3>Mains</h3><p>Every 230 V terminal goes inside a printed or ABS enclosure with no exposed screws. Earth the SMPS case and fuse the inlet. Unplug before touching anything.</p></div>
+    <div class="callout crit"><h3>Heat</h3><p>The block runs at 215 °C. Never leave the machine unattended while heating. Keep a ≥5 mm air gap to printed parts, and switch off at the inlet when you finish.</p></div>
+    <div class="callout"><h3>Blades &amp; fumes</h3><p>Snap-off blades are razor-sharp, so fit them with pliers. Work in a ventilated room and keep the nozzle under 250 °C. PET that turns brown is degrading.</p></div>
+  </div>
+</section>
+
+<!-- NEXT -->
+<section id="next">
+  <div class="sec-head"><div class="eyebrow">After v1 works</div><h2>v2 upgrades &amp; open questions</h2></div>
+  <div class="two">
+    <div class="plate">
+      <h3>Upgrade path (beyond ₹5k)</h3>
+      <ul class="tight" style="margin-top:10px">
+        <li><b>12 V 10 A SMPS</b>: more headroom (+₹300).</li>
+        <li><b>ESP32 controller</b>: replaces the PWM board and logs temperature and speed.</li>
+        <li><b>Inline diameter sensor</b> (hall-effect or optical) driving the puller speed in a closed loop. This is what makes ±0.05 mm, sellable filament possible.</li>
+        <li><b>Stepper puller</b> (NEMA17 + A4988) for constant line speed.</li>
+        <li><b>Drying</b>: PET absorbs moisture, so dry the filament before printing.</li>
+      </ul>
+    </div>
+    <div class="plate">
+      <h3>Tell me these to refine v1</h3>
+      <ul class="tight" style="margin-top:10px">
+        <li>Puller motor mount: round bore (≈37 mm) or rectangular pocket? A photo is best.</li>
+        <li>What material are the printed parts, PLA or PETG? This decides the hot-end air gap.</li>
+        <li>Which bottles will you use? Brand and volume, plus a caliper reading of the wall.</li>
+        <li>Your first-pull results: temperature, speed and measured diameter. I'll tune from those.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <span>References: PETamentor2 by growithjessie (<a href="https://www.printables.com/model/268067-filament-machine-ii-petamentor2" target="_blank" rel="noopener">Printables</a>, <a href="https://petamentor2.com/parts/" target="_blank" rel="noopener">parts list</a>), the JGY370 puller remix by <a href="https://www.printables.com/model/654172-petamentor-2-puller-jgy370" target="_blank" rel="noopener">Biro 3D</a>, the Tylman Design and Creative3DP build videos, and the <a href="https://www.steeman.be/posts/rex-c100-teardown/" target="_blank" rel="noopener">REX-C100 teardown</a> (terminal numbering).</span>
+  <span>Prices were checked on 3 Oct 2026 and change often. "Listed" prices came from store metadata and should be confirmed in the cart. Process numbers are starting points, not guarantees.</span>
+</footer>
+</div>
+
+<script>
+const BOM=[
+ {cat:"Heat & temperature control"},
+ {id:"rex",n:"REX-C100 PID controller",s:"FK02-V*AN · SSR drive output · K input · 0–400 °C · 100–240 V AC supply",q:1,p:529,st:"Robu",u:"https://robu.in/product/rex-c100-digital-thermostat-temperature-3/",b:"Robu ₹579",bu:"https://robu.in/product/rex-c100-digital-thermostat-temperature-2/",v:"snip",note:"Check the listing says SSR output. Don't buy the kit."},
+ {id:"ssr",n:"SSR-40DD solid-state relay",s:"DC→DC · input 3–32 V · output 5–200 V DC",q:1,p:449,st:"Robocraze",u:"https://robocraze.com/products/ssr-40dd-dc-3-32v-input-to-dc-5-200v-solid-state-relay",b:"Zbotic SSR-25DD ₹539",bu:"https://zbotic.in/product/fotek-5-60v-ssr-25dd-solid-state-relay/",v:"ver",note:"Must say DD. A DA relay will not switch the 12 V heater."},
+ {id:"tc",n:"K-type thermocouple probe",s:"Bead or small probe, 0–800 °C, 1 m lead",q:1,p:69,st:"Robocraze",u:"https://robocraze.com/products/k-type-thermocouple-sensor-probe-0-800-degree-c",b:"Zbotic ₹34",bu:"https://zbotic.in/product/0-to-600-c-surface-thermocouple-k-type-high-temperature-resistance-probe/",v:"ver",note:"Not NTC, not PT100. The M6-thread probes don't fit a V6 block."},
+ {id:"htr",n:"Cartridge heater 12 V 40 W",s:"6 × 20 mm ceramic",q:1,p:71,st:"Zbotic",u:"https://zbotic.in/product/12v-40w-ceramic-cartridge-heater/",b:"ElectronicsComp ₹78+GST",bu:"https://www.electronicscomp.com/12v-40w-ceramic-cartridge-heater",v:"ver",note:"12 V and 24 V look the same, so check before ordering."},
+ {id:"blk",n:"Heater block, E3D V6 style",s:"Aluminium · M6 nozzle thread · 6 mm heater bore",q:1,p:50,st:"Robocraze",u:"https://robocraze.com/products/aluminium-heat-block-for-e3d-v6-j-head-3d-printer",b:"Zbotic ₹45",bu:"https://zbotic.in/product/new-v6-heating-block-compatible-with-pt100-sensor/",v:"ver",note:"Only a few left in stock."},
+ {id:"noz",n:"Brass Volcano nozzle 1.75 × 1.2 mm",s:"M6 · drill out to 1.8 mm · one spare",q:2,p:53,st:"Robocraze",u:"https://robocraze.com/products/v6-volcano-brass-length-extruder-nozzle-1-75mm-x-1-2mm",b:"Robu 0.4 mm ₹49",bu:"https://robu.in/product/e3d-v5-v6-extra-nozzle-0-4mm-brass-nozzle-for-3d-printers/",v:"ver",note:"A 1.2 mm start makes drilling much easier than 0.4 mm."},
+ {id:"bit",n:"1.8 mm HSS drill bit",s:"Single bit, local hardware shop",q:1,p:40,st:"Local",u:"",v:"est",note:"Or the 25-bit Probots set below, which includes a pin vise."},
+ {cat:"Power & safety"},
+ {id:"psu",n:"SMPS 12 V 5 A (60 W)",s:"Metal enclosed · 230 V AC input",q:1,p:466,st:"ElectronicsComp",u:"https://www.electronicscomp.com/12v-5amp-smps-dc-metal-power-supply-nwp-india",b:"Robocraze ₹452",bu:"https://robocraze.com/products/12v-5a-smps",v:"ver",note:"111 in stock."},
+ {id:"iec",n:"IEC C14 inlet with switch + fuse holder",s:"10 A 250 V · snap-fit",q:1,p:143,st:"Probots",u:"https://probots.co.in/iec-c14-3-pin-ac-power-socket-fuse-switch-snap-fit.html",v:"ver",note:"Comes without a fuse. Use the T2A below."},
+ {id:"cord",n:"Power cord, 3-pin to IEC C13",s:"1.8 m",q:1,p:199,st:"Probots",u:"https://probots.co.in/5a-3-pin-ac-power-cable-1-8m-length-iec-c13-cord.html",v:"ver",note:"Untick this if you have an old PC or monitor cable."},
+ {id:"fac",n:"Glass fuse 2 A (AC side)",s:"5 × 20 mm, slow-blow preferred",q:1,p:8,st:"ElectronicsComp",u:"https://www.electronicscomp.com/2-amp-250v-glass-fuse-20mm",v:"ver",note:"Pack of 2. Slow-blow survives the SMPS inrush."},
+ {id:"fdc",n:"Fuse holder + 5 A slow fuse (12 V side)",s:"Panel FH-7 + 5 × 20 mm T5A",q:1,p:25,st:"Quartz",u:"https://quartzcomponents.com/products/fh-7-panel-mounting-fuse-holder",b:"5 A fuse ₹4",bu:"https://quartzcomponents.com/products/5a-glass-fuse-5x20mm",v:"ver"},
+ {id:"rock",n:"KCD1 rocker switch",s:"6 A 250 V · fits the printed On_OFF_switch part",q:1,p:16,st:"Robu",u:"https://robu.in/product/6a-250v-ac-spst-on-off-rocker-switch/",v:"snip",note:"Used as the puller start/stop on 12 V."},
+ {cat:"Motion"},
+ {id:"pull",n:"Puller motor JGB37-520, 12 V 7 RPM",s:"Spur gearbox · 6 mm D shaft (offset)",q:1,p:499,st:"Probots",u:"https://probots.co.in/jgb37-520-dc12v-7-rpm-miniature-speed-reduction-gear-dc-motor.html",b:"Robu JGY-370 10 RPM ₹599",bu:"https://robu.in/product/solid-shaft-jgy370-dc12v-10rpm-min-high-torque-self-locking-strong-wheel-tturbine-worm-reduction-motor/",v:"ver",note:"Matches the original 7 RPM. Pick the JGY-370 only if your mount is the worm-gearbox remix."},
+ {id:"n20",n:"N20 micro gear motor 12 V 300 RPM",s:"3 mm D shaft · drives blade height",q:1,p:208,st:"Zbotic",u:"https://zbotic.in/product/n20-12v-300-rpm-micro-metal-gear-motor/",b:"Robu N20",bu:"https://robu.in/?p=75776",v:"ver"},
+ {id:"pwm",n:"PWM motor speed controller 1203B",s:"6–28 V · 3 A · knob",q:1,p:89,st:"Quartz",u:"https://quartzcomponents.com/products/pwm-dc-motor-speed-regulator-6v-12v-24v-28v-3a-speed-control-switch-1203b",b:"Robocraze ₹129",bu:"https://robocraze.com/products/1203b-pwm-dc-motor-speed-controller-module",v:"ver"},
+ {id:"ms",n:"KW11-3Z microswitch, 2 pcs",s:"3-pin NO/NC · 20 × 10 mm · blade height +/−",q:1,p:30,st:"Robu",u:"https://robu.in/?p=53576",b:"Zbotic ₹26",bu:"https://zbotic.in/product/tact-switch-kw11-3z-5a-250v-micro-switch-round-handle-3-pin-n-o-n-c-for-3d-printers-2pcs/",v:"snip",note:"Zbotic shows out of stock. Robu has the same SKU."},
+ {cat:"Mechanical"},
+ {id:"blade",n:"Taparia 9 mm snap-off blades SKB-910",s:"Pack of 10",q:1,p:45,st:"Quartz",u:"https://quartzcomponents.com/products/taparia-9-mm-snap-off-cutter-blades-skb-910",v:"ver"},
+ {id:"m3",n:"M3 × 10 bolts + nuts",s:"Set of 50",q:1,p:150,st:"Probots",u:"https://probots.co.in/m3x10mm-bolts-and-nuts.html",v:"ver",note:"₹3 per set."},
+ {id:"m8",n:"M8 × 35 half-thread hex bolts ×2 + M8 nuts + M6 nut",s:"13 mm head",q:1,p:40,st:"Local",u:"",v:"est"},
+ {id:"board",n:"Baseboard, 12 mm ply or MDF",s:"≈450 × 140 mm (bigger is fine)",q:1,p:100,st:"Local",u:"",v:"est",note:"Offcuts at ply shops are often nearly free."},
+ {id:"wood",n:"Wood screws ~3 × 12 mm",s:"Small pack",q:1,p:30,st:"Local",u:"",v:"est"},
+ {cat:"Wiring & consumables"},
+ {id:"w18",n:"18 AWG silicone wire, red + black",s:"1 m each · 200 °C",q:2,p:30,st:"Zbotic",u:"https://zbotic.in/product/18awg-extrasoft-silicone-wire-color-red/",v:"ver"},
+ {id:"w22",n:"22 AWG hookup wire",s:"2 m",q:1,p:33,st:"ElectronicsComp",u:"https://www.electronicscomp.com/2-meter-ul1007-22awg-pvc-electronic-wire-black",v:"ver",note:"₹28 + GST."},
+ {id:"hs",n:"Heat-shrink assortment",s:"Small kit",q:1,p:100,st:"Local",u:"",v:"est"},
+ {id:"fer",n:"Ferrules 0.75 mm²",s:"Pack of 10",q:1,p:10,st:"Quartz",u:"https://quartzcomponents.com/products/0-75-sqmm-insulated-terminal-ferrule-end-lug-pack-of-10-crimp-wire-lugs-end-sealing-lugs-crimp-connectors-tubular-lugs-e-7508",v:"ver"},
+ {id:"kap",n:"Kapton tape 12 mm",s:"33 m",q:1,p:101,st:"Quartz",u:"https://quartzcomponents.com/products/kapton-tape",b:"Robu 10 mm",bu:"https://robu.in/product/10mm-33m-100ft-high-temperature-heat-resistant-polyimide-kapton-tape-hot/",v:"ver",note:"Holds the K bead on the block."},
+ {id:"fan",n:"12 V 4010 fan",s:"Cools filament after the nozzle",q:1,p:60,st:"Quartz",u:"https://quartzcomponents.com/products/12v-4010-cooling-fan-for-3d-printer",b:"Robocraze ₹68",bu:"https://robocraze.com/products/12v-brushless-dc-fan-4010",v:"ver"},
+ {cat:"Shipping"},
+ {id:"ship",n:"Shipping across stores",s:"Probots pickup is free · Zbotic free above ₹999",q:1,p:250,st:"—",u:"",v:"est"},
+ {cat:"Optional upgrades (unticked)"},
+ {id:"psu10",n:"Upgrade: SMPS 12 V 10 A instead of 5 A",s:"Extra cost over the 5 A unit",q:1,p:300,st:"ElectronicsComp",u:"https://www.electronicscomp.com/12v-10amp-smps-dc-metal-power-supply-nwp-india",v:"ver",opt:1,note:"₹649 + GST ≈ ₹766 total. The first upgrade to buy."},
+ {id:"cal",n:"Digital vernier caliper 150 mm",s:"Measures bottle wall and filament diameter",q:1,p:450,st:"Local/Amazon",u:"",v:"est",opt:1,note:"Strongly recommended for quality control."},
+ {id:"drill",n:"Mini drill bit set, 25 pcs + pin vise",s:"0.5–3 mm · includes 2× 1.8 mm",q:1,p:449,st:"Probots",u:"https://probots.co.in/mini-drill-bit-set-with-25-bits.html",v:"ver",opt:1,note:"Replaces the single local bit."},
+];
+const KEY="selvi-bom-v1";let state={};
+try{state=JSON.parse(localStorage.getItem(KEY)||"{}")}catch(e){state={}}
+function on(it){return state[it.id]!==undefined?state[it.id]:!it.opt}
+const fmt=n=>"₹"+Math.round(n).toLocaleString("en-IN");
+const tbody=document.querySelector("#bomTable tbody");
+const vt={ver:["t-ver","VERIFIED"],snip:["t-snip","LISTED"],est:["t-est","ESTIMATE"]};
+function esc(s){return String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]))}
+function render(){
+  tbody.innerHTML="";
+  BOM.forEach(it=>{
+    const tr=document.createElement("tr");
+    if(it.cat){tr.className="cat";tr.innerHTML=`<td colspan="6">${esc(it.cat)}</td>`;tbody.appendChild(tr);return}
+    const inc=on(it);if(!inc)tr.className="off";
+    const links=[];
+    if(it.u)links.push(`<a href="${it.u}" target="_blank" rel="noopener">${esc(it.st)} →</a>`);else links.push(`<span>${esc(it.st)}</span>`);
+    if(it.bu)links.push(`<a href="${it.bu}" target="_blank" rel="noopener" style="color:var(--muted)">Backup: ${esc(it.b)}</a>`);
+    const [c,l]=vt[it.v];
+    tr.innerHTML=`<td><div class="part">${esc(it.n)}</div><div class="spec">${esc(it.s)}</div>${it.note?`<div class="note">${esc(it.note)}</div>`:""}</td>
+      <td class="num">${it.q}</td><td class="num">${fmt(it.p*it.q)}</td>
+      <td><div class="links">${links.join("")}</div></td>
+      <td><span class="tag ${c}">${l}</span>${it.opt?' <span class="tag t-opt">OPTIONAL</span>':""}</td>
+      <td class="ctl"><label for="c_${it.id}"><input type="checkbox" id="c_${it.id}" ${inc?"checked":""}> ${it.opt?"Add":"Buy (untick = have it)"}</label></td>`;
+    tr.querySelector("input").addEventListener("change",e=>{state[it.id]=e.target.checked;try{localStorage.setItem(KEY,JSON.stringify(state))}catch(_){}render()});
+    tbody.appendChild(tr);
+  });
+  let tot=0,n=0;const by={};
+  BOM.forEach(it=>{if(it.cat||!on(it))return;const v=it.p*it.q;tot+=v;n++;by[it.st]=(by[it.st]||0)+v});
+  const left=5000-tot;
+  document.getElementById("bTotal").textContent=fmt(tot);
+  document.getElementById("kTotal").textContent=fmt(tot);
+  document.getElementById("kLeft").textContent=left>=0?fmt(left):"−"+fmt(-left);
+  document.getElementById("bLeft").textContent=left>=0?`${fmt(left)} under budget`:`${fmt(-left)} over budget`;
+  document.getElementById("bCount").textContent=`${n} line items`;
+  const bar=document.getElementById("bBar");bar.classList.toggle("over",left<0);
+  bar.firstElementChild.style.width=Math.min(100,tot/50)+"%";
+  document.getElementById("stores").innerHTML=Object.entries(by).sort((a,b)=>b[1]-a[1]).map(([s,v])=>`<div class="store"><span>${esc(s)}</span><b>${fmt(v)}</b></div>`).join("");
+}
+render();
+function calc(){
+  const g=id=>parseFloat(document.getElementById(id).value);
+  const t=g("cT"),d=g("cD");
+  if(t>0&&d>0){const A=Math.PI*d*d/4,w=A/t;
+    document.getElementById("oW").textContent=w.toFixed(1)+" mm";
+    document.getElementById("oWn").textContent=`Filament cross-section ${A.toFixed(2)} mm². Start here, then widen 0.5 mm if the diameter comes out under target.`}
+  const hub=g("cHub"),rpm=g("cRpm"),bd=g("cBd"),bh=g("cBh");
+  if(hub>0&&rpm>0){const v=Math.PI*hub*rpm/1000;
+    document.getElementById("oS").textContent=v.toFixed(2)+" m/min";
+    if(bd>0&&bh>0&&t>0&&d>0){const w=(Math.PI*d*d/4)/t,L=Math.PI*bd*bh/w/1000,A=Math.PI*d*d/4,g2=L*1000*A/1000*1.38;
+      document.getElementById("oY").textContent=`One bottle ≈ ${L.toFixed(1)} m of strip → ≈ ${g2.toFixed(0)} g of filament (PET 1.38 g/cm³) in ≈ ${(L/v).toFixed(0)} min at the empty-hub speed.`}}
+}
+["cT","cD","cHub","cRpm","cBd","cBh"].forEach(id=>document.getElementById(id).addEventListener("input",calc));calc();
+</script>
