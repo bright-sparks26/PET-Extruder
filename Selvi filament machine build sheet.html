@@ -115,13 +115,13 @@ footer{margin-top:40px;font-size:12.5px;color:var(--muted);border-top:1px solid 
 
 <div class="wrap">
 <header class="top">
-  <div class="eyebrow">DharaLabs · Project Selvi · Build sheet v1 · 3 Oct 2026</div>
+  <div class="eyebrow">DharaLabs · Project Selvi · Build sheet v1.1 · merged with team list · 3 Oct 2026</div>
   <h1>Selvi Filament Machine</h1>
   <p class="lede">An Indian-sourced PETamentor2 build. The bottle is cut into a strip, pulled through a 215 °C nozzle where it folds into 1.75 mm filament, and wound onto a spool, all in one continuous pass. Every part is from an Indian store, and the total stays under ₹5,000. Your 3D-printed parts are already done.</p>
   <div class="kpis" aria-label="Key figures">
     <div class="kpi"><b id="kTotal">₹—</b><span>Parts + shipping (live)</span></div>
     <div class="kpi"><b id="kLeft">₹—</b><span>Left of ₹5,000 budget</span></div>
-    <div class="kpi"><b>12 V · 60 W</b><span>Single DC rail; heater uses 40 W of it</span></div>
+    <div class="kpi"><b>12 V · 120 W</b><span>Single DC rail (10 A SMPS); heater uses 40 W</span></div>
     <div class="kpi"><b>~23 g</b><span>Filament per 1.5 L bottle (estimate)</span></div>
   </div>
 </header>
@@ -255,7 +255,7 @@ footer{margin-top:40px;font-size:12.5px;color:var(--muted);border-top:1px solid 
       <text x="90" y="118" text-anchor="middle" font-size="10.5" fill="var(--muted)">T2A fuse</text>
       <!-- SMPS -->
       <rect x="300" y="30" width="180" height="110" rx="4" fill="var(--paper)" stroke="currentColor" stroke-width="1.5"/>
-      <text x="390" y="22" text-anchor="middle" font-size="13" font-weight="600" fill="currentColor">SMPS 12 V 5 A</text>
+      <text x="390" y="22" text-anchor="middle" font-size="13" font-weight="600" fill="currentColor">SMPS 12 V 10 A</text>
       <text x="308" y="54" font-size="11.5" fill="currentColor">⏚</text><text x="308" y="84" font-size="11.5" fill="currentColor">L</text><text x="308" y="114" font-size="11.5" fill="currentColor">N</text>
       <text x="470" y="64" text-anchor="end" font-size="11.5" fill="currentColor">V+</text><text x="470" y="104" text-anchor="end" font-size="11.5" fill="currentColor">V−</text>
       <!-- REX -->
@@ -279,7 +279,7 @@ footer{margin-top:40px;font-size:12.5px;color:var(--muted);border-top:1px solid 
       <!-- 12V + rail with fuse -->
       <path d="M480 60 H585" stroke="var(--heat)" stroke-width="2.4" fill="none"/>
       <rect x="585" y="50" width="60" height="20" rx="10" fill="var(--paper)" stroke="var(--heat)" stroke-width="1.6"/>
-      <text x="615" y="64" text-anchor="middle" font-size="10.5" fill="var(--heat)">5 A T</text>
+      <text x="615" y="64" text-anchor="middle" font-size="10.5" fill="var(--heat)">7.5 A</text>
       <path d="M645 60 H860 V220" stroke="var(--heat)" stroke-width="2.4" fill="none"/>
       <text x="740" y="52" text-anchor="middle" font-size="11" fill="var(--heat)">+12 V rail → also drawing B</text>
       <!-- V- -->
@@ -320,7 +320,7 @@ footer{margin-top:40px;font-size:12.5px;color:var(--muted);border-top:1px solid 
     <div class="svgbox">
     <svg viewBox="0 0 940 360" role="img" aria-label="12 V rail feeds: a rocker switch then the 1203B PWM controller driving the JGB37 puller motor; two KW11 microswitches wired as an H-bridge driving the N20 blade-height motor; and an optional 4010 fan.">
       <path d="M40 40 H900" stroke="var(--heat)" stroke-width="2.6"/>
-      <text x="40" y="28" font-size="12" fill="var(--heat)" font-weight="600">+12 V (after 5 A fuse)</text>
+      <text x="40" y="28" font-size="12" fill="var(--heat)" font-weight="600">+12 V (after 7.5 A fuse)</text>
       <path d="M40 320 H900" stroke="var(--wire-neg)" stroke-width="2.6"/>
       <text x="40" y="344" font-size="12" fill="currentColor" font-weight="600">0 V (SMPS V−)</text>
       <!-- rocker -->
@@ -386,7 +386,7 @@ footer{margin-top:40px;font-size:12.5px;color:var(--muted);border-top:1px solid 
         <tr><td>IEC L (after switch + fuse)</td><td>SMPS L · REX 1</td><td><span class="swatch" style="background:var(--wire-l)"></span>0.75 mm² brown</td><td>Ferrules on every screw terminal. Fuse: T2A slow-blow.</td></tr>
         <tr><td>IEC N</td><td>SMPS N · REX 2</td><td><span class="swatch" style="background:var(--wire-n)"></span>0.75 mm² blue</td><td>REX-C100 runs on 100–240 V AC. Don't feed it 12 V.</td></tr>
         <tr><td>IEC E</td><td>SMPS ⏚</td><td><span class="swatch" style="background:var(--wire-e)"></span>0.75 mm² green</td><td>Earth the metal SMPS case. Never skip this.</td></tr>
-        <tr><td>SMPS V+</td><td>5 A fuse → +12 V rail</td><td>18 AWG red silicone</td><td>Feeds the heater, rocker/PWM, microswitch NOs and fan.</td></tr>
+        <tr><td>SMPS V+</td><td>7.5 A blade fuse → +12 V rail</td><td>18 AWG red silicone</td><td>Feeds the heater, rocker/PWM, microswitch NOs and fan.</td></tr>
         <tr><td>SMPS V−</td><td>0 V rail · SSR OUT− · PWM IN− · NCs · fan −</td><td>18 AWG black</td><td>Single star point at the SMPS V− screw.</td></tr>
         <tr><td>REX 4 (+)</td><td>SSR IN+ (3)</td><td>22 AWG</td><td>About 12 V DC drive. A DD relay accepts 3–32 V.</td></tr>
         <tr><td>REX 5 (−)</td><td>SSR IN− (4)</td><td>22 AWG</td><td></td></tr>
@@ -399,7 +399,7 @@ footer{margin-top:40px;font-size:12.5px;color:var(--muted);border-top:1px solid 
       </tbody>
     </table>
   </div>
-  <p class="note">Power budget: heater 3.3 A + puller ~0.3 A running + N20 ~0.1 A + fan 0.1 A ≈ 3.8 A, inside the SMPS's 5 A. Motor stall currents can add 1 A briefly, which is why the 12 V 10 A SMPS (+₹300) is the first upgrade to buy if you have money left over.</p>
+  <p class="note">Power budget: heater 3.3 A + puller ~0.3 A running + N20 ~0.1 A + fan 0.1 A ≈ 3.8 A, well inside the 10 A SMPS, so a motor stall (+1 A briefly) won't trip it.</p>
 </section>
 
 <!-- BUILD -->
@@ -483,7 +483,7 @@ footer{margin-top:40px;font-size:12.5px;color:var(--muted);border-top:1px solid 
       <tr><td>Diameter under 1.70 mm</td><td>Strip too narrow, or pulling too fast</td><td>Widen the strip by 0.5 mm, or slow down</td></tr>
       <tr><td>Diameter over 1.85 mm, or seam open</td><td>Strip too wide, or bore too big</td><td>Narrow the strip; try a new 1.75 mm bore</td></tr>
       <tr><td>Strip width wanders</td><td>Dented or oval bottle, or bottom cut not square</td><td>Dip the bottle in hot water to reshape it, and recut the bottom</td></tr>
-      <tr><td>SMPS clicks or resets when the motor starts</td><td>Overload during motor stall plus heater</td><td>Upgrade to the 12 V 10 A SMPS</td></tr>
+      <tr><td>SMPS clicks or resets when the motor starts</td><td>Short or stalled motor</td><td>Check the motor wiring; free the stalled mechanism</td></tr>
       <tr><td>REX reading jumps when motors run</td><td>Motor noise on the thermocouple</td><td>100 nF across the motors; route the TC lead away from motor wires</td></tr>
     </tbody>
   </table></div>
@@ -506,8 +506,7 @@ footer{margin-top:40px;font-size:12.5px;color:var(--muted);border-top:1px solid 
     <div class="plate">
       <h3>Upgrade path (beyond ₹5k)</h3>
       <ul class="tight" style="margin-top:10px">
-        <li><b>12 V 10 A SMPS</b>: more headroom (+₹300).</li>
-        <li><b>ESP32 controller</b>: replaces the PWM board and logs temperature and speed.</li>
+                <li><b>ESP32 controller</b>: replaces the PWM board and logs temperature and speed.</li>
         <li><b>Inline diameter sensor</b> (hall-effect or optical) driving the puller speed in a closed loop. This is what makes ±0.05 mm, sellable filament possible.</li>
         <li><b>Stepper puller</b> (NEMA17 + A4988) for constant line speed.</li>
         <li><b>Drying</b>: PET absorbs moisture, so dry the filament before printing.</li>
@@ -540,13 +539,13 @@ const BOM=[
  {id:"htr",n:"Cartridge heater 12 V 40 W",s:"6 × 20 mm ceramic",q:1,p:71,st:"Zbotic",u:"https://zbotic.in/product/12v-40w-ceramic-cartridge-heater/",b:"ElectronicsComp ₹78+GST",bu:"https://www.electronicscomp.com/12v-40w-ceramic-cartridge-heater",v:"ver",note:"12 V and 24 V look the same, so check before ordering."},
  {id:"blk",n:"Heater block, E3D V6 style",s:"Aluminium · M6 nozzle thread · 6 mm heater bore",q:1,p:50,st:"Robocraze",u:"https://robocraze.com/products/aluminium-heat-block-for-e3d-v6-j-head-3d-printer",b:"Zbotic ₹45",bu:"https://zbotic.in/product/new-v6-heating-block-compatible-with-pt100-sensor/",v:"ver",note:"Only a few left in stock."},
  {id:"noz",n:"Brass Volcano nozzle 1.75 × 1.2 mm",s:"M6 · drill out to 1.8 mm · one spare",q:2,p:53,st:"Robocraze",u:"https://robocraze.com/products/v6-volcano-brass-length-extruder-nozzle-1-75mm-x-1-2mm",b:"Robu 0.4 mm ₹49",bu:"https://robu.in/product/e3d-v5-v6-extra-nozzle-0-4mm-brass-nozzle-for-3d-printers/",v:"ver",note:"A 1.2 mm start makes drilling much easier than 0.4 mm."},
- {id:"bit",n:"1.8 mm HSS drill bit",s:"Single bit, local hardware shop",q:1,p:40,st:"Local",u:"",v:"est",note:"Or the 25-bit Probots set below, which includes a pin vise."},
+ {id:"drill",n:"Mini drill bit set, 25 pcs + pin vise",s:"0.5–3 mm · includes 1.5 mm and 2× 1.8 mm",q:1,p:449,st:"Probots",u:"https://probots.co.in/mini-drill-bit-set-with-25-bits.html",v:"ver",note:"Replaces the intern's single 1.5 mm bit. 1.8 mm is the target bore; 1.5 mm is for comparison."},
  {cat:"Power & safety"},
- {id:"psu",n:"SMPS 12 V 5 A (60 W)",s:"Metal enclosed · 230 V AC input",q:1,p:466,st:"ElectronicsComp",u:"https://www.electronicscomp.com/12v-5amp-smps-dc-metal-power-supply-nwp-india",b:"Robocraze ₹452",bu:"https://robocraze.com/products/12v-5a-smps",v:"ver",note:"111 in stock."},
+ {id:"psu",n:"SMPS 12 V 10 A (120 W)",s:"Metal enclosed · 230 V AC input",q:1,p:766,st:"ElectronicsComp",u:"https://www.electronicscomp.com/12v-10amp-smps-dc-metal-power-supply-nwp-india",b:"12 V 5 A ₹466",bu:"https://www.electronicscomp.com/12v-5amp-smps-dc-metal-power-supply-nwp-india",v:"ver",note:"Already ordered by the team. ₹649 + GST."},
  {id:"iec",n:"IEC C14 inlet with switch + fuse holder",s:"10 A 250 V · snap-fit",q:1,p:143,st:"Probots",u:"https://probots.co.in/iec-c14-3-pin-ac-power-socket-fuse-switch-snap-fit.html",v:"ver",note:"Comes without a fuse. Use the T2A below."},
  {id:"cord",n:"Power cord, 3-pin to IEC C13",s:"1.8 m",q:1,p:199,st:"Probots",u:"https://probots.co.in/5a-3-pin-ac-power-cable-1-8m-length-iec-c13-cord.html",v:"ver",note:"Untick this if you have an old PC or monitor cable."},
  {id:"fac",n:"Glass fuse 2 A (AC side)",s:"5 × 20 mm, slow-blow preferred",q:1,p:8,st:"ElectronicsComp",u:"https://www.electronicscomp.com/2-amp-250v-glass-fuse-20mm",v:"ver",note:"Pack of 2. Slow-blow survives the SMPS inrush."},
- {id:"fdc",n:"Fuse holder + 5 A slow fuse (12 V side)",s:"Panel FH-7 + 5 × 20 mm T5A",q:1,p:25,st:"Quartz",u:"https://quartzcomponents.com/products/fh-7-panel-mounting-fuse-holder",b:"5 A fuse ₹4",bu:"https://quartzcomponents.com/products/5a-glass-fuse-5x20mm",v:"ver"},
+ {id:"fdc",n:"7.5 A blade fuse + inline holder (12 V side)",s:"Automotive ATO/ATC · right at SMPS V+",q:1,p:60,st:"Local",u:"",v:"est",note:"Team's choice; suits the 10 A SMPS. Alternative: panel 5×20 mm holder ₹21 at Quartz."},
  {id:"rock",n:"KCD1 rocker switch",s:"6 A 250 V · fits the printed On_OFF_switch part",q:1,p:16,st:"Robu",u:"https://robu.in/product/6a-250v-ac-spst-on-off-rocker-switch/",v:"snip",note:"Used as the puller start/stop on 12 V."},
  {cat:"Motion"},
  {id:"pull",n:"Puller motor JGB37-520, 12 V 7 RPM",s:"Spur gearbox · 6 mm D shaft (offset)",q:1,p:499,st:"Probots",u:"https://probots.co.in/jgb37-520-dc12v-7-rpm-miniature-speed-reduction-gear-dc-motor.html",b:"Robu JGY-370 10 RPM ₹599",bu:"https://robu.in/product/solid-shaft-jgy370-dc12v-10rpm-min-high-torque-self-locking-strong-wheel-tturbine-worm-reduction-motor/",v:"ver",note:"Matches the original 7 RPM. Pick the JGY-370 only if your mount is the worm-gearbox remix."},
@@ -556,6 +555,7 @@ const BOM=[
  {cat:"Mechanical"},
  {id:"blade",n:"Taparia 9 mm snap-off blades SKB-910",s:"Pack of 10",q:1,p:45,st:"Quartz",u:"https://quartzcomponents.com/products/taparia-9-mm-snap-off-cutter-blades-skb-910",v:"ver"},
  {id:"m3",n:"M3 × 10 bolts + nuts",s:"Set of 50",q:1,p:150,st:"Probots",u:"https://probots.co.in/m3x10mm-bolts-and-nuts.html",v:"ver",note:"₹3 per set."},
+ {id:"lbr",n:"20 × 20 mm steel L-bracket",s:"Holds the hot block clear of PLA parts",q:1,p:20,st:"Local",u:"",v:"est",note:"Added from the team's list. Keep a ≥5 mm air gap to plastic."},
  {id:"m8",n:"M8 × 35 half-thread hex bolts ×2 + M8 nuts + M6 nut",s:"13 mm head",q:1,p:40,st:"Local",u:"",v:"est"},
  {id:"board",n:"Baseboard, 12 mm ply or MDF",s:"≈450 × 140 mm (bigger is fine)",q:1,p:100,st:"Local",u:"",v:"est",note:"Offcuts at ply shops are often nearly free."},
  {id:"wood",n:"Wood screws ~3 × 12 mm",s:"Small pack",q:1,p:30,st:"Local",u:"",v:"est"},
@@ -569,11 +569,9 @@ const BOM=[
  {cat:"Shipping"},
  {id:"ship",n:"Shipping across stores",s:"Probots pickup is free · Zbotic free above ₹999",q:1,p:250,st:"—",u:"",v:"est"},
  {cat:"Optional upgrades (unticked)"},
- {id:"psu10",n:"Upgrade: SMPS 12 V 10 A instead of 5 A",s:"Extra cost over the 5 A unit",q:1,p:300,st:"ElectronicsComp",u:"https://www.electronicscomp.com/12v-10amp-smps-dc-metal-power-supply-nwp-india",v:"ver",opt:1,note:"₹649 + GST ≈ ₹766 total. The first upgrade to buy."},
  {id:"cal",n:"Digital vernier caliper 150 mm",s:"Measures bottle wall and filament diameter",q:1,p:450,st:"Local/Amazon",u:"",v:"est",opt:1,note:"Strongly recommended for quality control."},
- {id:"drill",n:"Mini drill bit set, 25 pcs + pin vise",s:"0.5–3 mm · includes 2× 1.8 mm",q:1,p:449,st:"Probots",u:"https://probots.co.in/mini-drill-bit-set-with-25-bits.html",v:"ver",opt:1,note:"Replaces the single local bit."},
 ];
-const KEY="selvi-bom-v1";let state={};
+const KEY="selvi-bom-v2";let state={};
 try{state=JSON.parse(localStorage.getItem(KEY)||"{}")}catch(e){state={}}
 function on(it){return state[it.id]!==undefined?state[it.id]:!it.opt}
 const fmt=n=>"₹"+Math.round(n).toLocaleString("en-IN");
