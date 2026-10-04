@@ -115,7 +115,7 @@ footer{margin-top:40px;font-size:12.5px;color:var(--muted);border-top:1px solid 
 
 <div class="wrap">
 <header class="top">
-  <div class="eyebrow">DharaLabs · Project Selvi · Build sheet v1.1 · merged with team list · 3 Oct 2026</div>
+  <div class="eyebrow">DharaLabs · Project Selvi · Build sheet v1.2 · Arduino heater controller · 4 Oct 2026</div>
   <h1>Selvi Filament Machine</h1>
   <p class="lede">An Indian-sourced PETamentor2 build. The bottle is cut into a strip, pulled through a 215 °C nozzle where it folds into 1.75 mm filament, and wound onto a spool, all in one continuous pass. Every part is from an Indian store, and the total stays under ₹5,000. Your 3D-printed parts are already done.</p>
   <div class="kpis" aria-label="Key figures">
@@ -128,7 +128,7 @@ footer{margin-top:40px;font-size:12.5px;color:var(--muted);border-top:1px solid 
 </div>
 
 <nav class="rail" aria-label="Sections"><div class="wrap">
-  <a href="#checks">Before ordering</a><a href="#how">How it works</a><a href="#bom">Parts &amp; prices</a><a href="#wiring">Circuit</a><a href="#terminals">Terminal map</a><a href="#build">Assembly</a><a href="#calc">Calculators</a><a href="#tune">First run &amp; tuning</a><a href="#trouble">Troubleshooting</a><a href="#safety">Safety</a><a href="#next">v2 &amp; open questions</a>
+  <a href="#checks">Before ordering</a><a href="#how">How it works</a><a href="#bom">Parts &amp; prices</a><a href="#wiring">Circuit</a><a href="#terminals">Terminal map</a><a href="#build">Assembly</a><a href="#calc">Calculators</a><a href="#tune">First run &amp; tuning</a><a href="#firmware">Firmware</a><a href="#trouble">Troubleshooting</a><a href="#safety">Safety</a><a href="#next">v2 &amp; open questions</a>
 </div></nav>
 
 <div class="wrap">
@@ -137,8 +137,8 @@ footer{margin-top:40px;font-size:12.5px;color:var(--muted);border-top:1px solid 
 <section id="checks">
   <div class="sec-head"><div class="eyebrow">Read first</div><h2>Four checks before you order</h2></div>
   <div class="callouts">
-    <div class="callout crit"><h3>1 · Don't buy the REX-C100 "kit"</h3><p>Amazon's REX-C100 + K-type + 40A SSR kits ship an <b>SSR-40DA</b>, which switches AC loads only. Your heater runs on 12 V DC, so a DA relay will never turn it on. Buy the controller on its own and a <b>DD</b> (DC→DC) relay.</p></div>
-    <div class="callout crit"><h3>2 · Model code must contain "V"</h3><p>On <span class="mono">REX-C100FK02-<b>V</b>*AN</span>, the V means it drives an SSR. An <b>M</b> means a relay output. Check the listing title or photo before you pay.</p></div>
+    <div class="callout crit"><h3>1 · Relay must be DD, not DA</h3><p>Your heater runs on 12 V DC. An <b>SSR-40DA</b>, the type bundled in most Amazon "REX-C100 kits", switches AC loads only and will never turn the heater on. Buy an <b>SSR-40DD</b> (DC→DC).</p></div>
+    <div class="callout crit"><h3>2 · Controller is now Arduino + MAX6675</h3><p>The REX-C100 is out of stock at Robu. The only one in stock elsewhere (ElectronicsComp, ₹1,283+) would push the build over budget. The replacement is an Arduino Nano reading a K-type thermocouple through a MAX6675, running PID firmware. All of it is in stock, costs ₹193 more, and runs on 12 V. If you do find a <span class="mono">REX-C100FK02-<b>V</b></span>, it still wires in as a direct alternative.</p></div>
     <div class="callout"><h3>3 · Measure your printed puller mount</h3><p>Your parts are already printed, so the motor has to fit them. If <span class="mono">Puller – motor mount</span> has a round ~37 mm bore, buy the <b>JGB37-520 7 RPM</b> (default below). If it has a rectangular worm-gearbox pocket, it's the JGY-370 remix, so switch to the <b>JGY-370 10 RPM</b>. The <span class="mono">Cutter – motor bracket</span> should take a 12 × 10 mm N20.</p></div>
     <div class="callout info"><h3>4 · Microswitches, not tact buttons</h3><p>The <span class="mono">MS switch bracket</span> and the plus/minus buttons press two 3-pin <b>KW11-3Z</b> microswitches (20 × 10 mm). Their NO/NC contacts reverse the blade-height motor, and 4-pin tact switches can't do that.</p></div>
   </div>
@@ -207,7 +207,7 @@ footer{margin-top:40px;font-size:12.5px;color:var(--muted);border-top:1px solid 
       <path d="M955 120 V170" stroke="currentColor" stroke-width="0"/>
     </svg>
     </div>
-    <figcaption>Nothing pushes the strip. The spool motor pulls the filament, the filament drags the strip through the nozzle, and the strip unwinds the bottle against the blade. That's why one speed knob (puller PWM) and one temperature (REX-C100) set the whole process.</figcaption>
+    <figcaption>Nothing pushes the strip. The spool motor pulls the filament, the filament drags the strip through the nozzle, and the strip unwinds the bottle against the blade. That's why one speed knob (puller PWM) and one temperature knob (heater controller) set the whole process.</figcaption>
   </figure>
 </section>
 
@@ -235,7 +235,7 @@ footer{margin-top:40px;font-size:12.5px;color:var(--muted);border-top:1px solid 
   </div>
   <div class="eyebrow">Order list by store</div>
   <div class="stores" id="stores"></div>
-  <p class="note">Bengaluru tip: Probots offers same-day pickup (Nagarabhavi and Koramangala), so the motor, inlet, cord and screws carry no shipping. Zbotic ships free above ₹999. Order the REX-C100 and SSR first, because they're the parts most likely to go out of stock.</p>
+  <p class="note">Bengaluru tip: Probots offers same-day pickup (Nagarabhavi and Koramangala), so the motor, inlet, cord and screws carry no shipping. Zbotic ships free above ₹999. Order the SSR-40DD and MAX6675 first, because they're the parts most likely to go out of stock.</p>
 </section>
 
 <!-- WIRING -->
@@ -243,7 +243,7 @@ footer{margin-top:40px;font-size:12.5px;color:var(--muted);border-top:1px solid 
   <div class="sec-head"><div class="eyebrow">Electrical · drawing A of 2</div><h2>Circuit: mains, PSU &amp; heater loop</h2></div>
   <figure class="plate">
     <div class="svgbox">
-    <svg viewBox="0 0 940 450" role="img" aria-label="Mains enters an IEC inlet with fuse and switch and feeds the 12 V SMPS and the REX-C100. The REX-C100 drives the input of an SSR-40DD. The SSR switches the low side of the 12 V cartridge heater. A K-type thermocouple in the heater block returns to REX terminals 9 and 10.">
+    <svg viewBox="0 0 940 450" role="img" aria-label="Mains enters an IEC inlet with fuse and switch and feeds only the 12 V SMPS. An Arduino Nano powered from 12 V reads a K-type thermocouple through a MAX6675 and drives the input of an SSR-40DD from pin D9. The SSR switches the low side of the 12 V cartridge heater.">
       <defs><marker id="ar2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker></defs>
       <rect x="8" y="8" width="250" height="434" rx="6" fill="none" stroke="var(--heat)" stroke-dasharray="6 5" stroke-width="1.2"/>
       <text x="20" y="430" font-size="12" fill="var(--heat)" font-weight="600">230 V AC zone · enclosed, earthed</text>
@@ -258,24 +258,22 @@ footer{margin-top:40px;font-size:12.5px;color:var(--muted);border-top:1px solid 
       <text x="390" y="22" text-anchor="middle" font-size="13" font-weight="600" fill="currentColor">SMPS 12 V 10 A</text>
       <text x="308" y="54" font-size="11.5" fill="currentColor">⏚</text><text x="308" y="84" font-size="11.5" fill="currentColor">L</text><text x="308" y="114" font-size="11.5" fill="currentColor">N</text>
       <text x="470" y="64" text-anchor="end" font-size="11.5" fill="currentColor">V+</text><text x="470" y="104" text-anchor="end" font-size="11.5" fill="currentColor">V−</text>
-      <!-- REX -->
+      <!-- Controller -->
       <rect x="300" y="240" width="180" height="180" rx="4" fill="var(--paper)" stroke="currentColor" stroke-width="1.5"/>
-      <text x="390" y="232" text-anchor="middle" font-size="13" font-weight="600" fill="currentColor">REX-C100 (FK02-V)</text>
-      <text x="308" y="274" font-size="11.5" fill="currentColor">1 AC</text><text x="308" y="304" font-size="11.5" fill="currentColor">2 AC</text>
-      <text x="470" y="274" text-anchor="end" font-size="11.5" fill="currentColor">4 SSR +</text><text x="470" y="304" text-anchor="end" font-size="11.5" fill="currentColor">5 SSR −</text>
-      <text x="470" y="379" text-anchor="end" font-size="11.5" fill="currentColor">9 TC</text><text x="470" y="399" text-anchor="end" font-size="11.5" fill="currentColor">10 TC</text>
-      <text x="390" y="345" text-anchor="middle" font-size="10.5" fill="var(--muted)">PID · K-type · 0–400 °C</text>
+      <text x="390" y="232" text-anchor="middle" font-size="13" font-weight="600" fill="currentColor">Arduino Nano + MAX6675</text>
+      <text x="308" y="274" font-size="11.5" fill="currentColor">VIN</text><text x="308" y="304" font-size="11.5" fill="currentColor">GND</text>
+      <text x="470" y="274" text-anchor="end" font-size="11.5" fill="currentColor">D9</text><text x="470" y="304" text-anchor="end" font-size="11.5" fill="currentColor">GND</text>
+      <text x="470" y="379" text-anchor="end" font-size="11.5" fill="currentColor">T+</text><text x="470" y="399" text-anchor="end" font-size="11.5" fill="currentColor">T−</text>
+      <text x="390" y="330" text-anchor="middle" font-size="10.5" fill="var(--muted)">PID firmware · 150–250 °C</text>
+      <text x="390" y="346" text-anchor="middle" font-size="10.5" fill="var(--muted)">TM1637 display · 10k pot</text>
+      <path d="M262 270 H300" stroke="var(--heat)" stroke-width="2"/><text x="266" y="263" font-size="10" fill="var(--heat)">+12 V</text>
+      <path d="M262 300 H300" stroke="var(--wire-neg)" stroke-width="2"/><text x="266" y="317" font-size="10" fill="currentColor">0 V</text>
       <!-- mains wires -->
       <g fill="none" stroke-width="2.2">
         <path d="M160 80 H190 V50 H300" stroke="var(--wire-e)"/>
         <path d="M160 110 H220 V80 H300" stroke="var(--wire-l)"/>
-        <path d="M220 110 V270 H300" stroke="var(--wire-l)"/>
         <path d="M160 140 H250 V110 H300" stroke="var(--wire-n)"/>
-        <path d="M250 140 V300 H300" stroke="var(--wire-n)"/>
       </g>
-      <circle cx="220" cy="110" r="4" fill="var(--wire-l)"/><circle cx="250" cy="140" r="4" fill="var(--wire-n)"/>
-      <text x="196" y="198" font-size="10.5" fill="var(--wire-l)" transform="rotate(-90 212 198)">L</text>
-      <text x="256" y="220" font-size="10.5" fill="var(--wire-n)">N</text>
       <!-- 12V + rail with fuse -->
       <path d="M480 60 H585" stroke="var(--heat)" stroke-width="2.4" fill="none"/>
       <rect x="585" y="50" width="60" height="20" rx="10" fill="var(--paper)" stroke="var(--heat)" stroke-width="1.6"/>
@@ -291,10 +289,10 @@ footer{margin-top:40px;font-size:12.5px;color:var(--muted);border-top:1px solid 
       <text x="588" y="274" font-size="11.5" fill="currentColor">IN+ (3)</text><text x="588" y="304" font-size="11.5" fill="currentColor">IN− (4)</text>
       <text x="722" y="274" text-anchor="end" font-size="11.5" fill="currentColor">OUT −</text><text x="722" y="334" text-anchor="end" font-size="11.5" fill="currentColor">OUT +</text>
       <text x="655" y="342" text-anchor="middle" font-size="10" fill="var(--muted)">DC→DC</text>
-      <!-- REX to SSR -->
+      <!-- Nano to SSR -->
       <path d="M480 270 H580" stroke="var(--accent)" stroke-width="2" fill="none"/>
       <path d="M480 300 H580" stroke="currentColor" stroke-width="2" fill="none"/>
-      <text x="530" y="262" text-anchor="middle" font-size="10.5" fill="var(--accent)">~12 V drive</text>
+      <text x="530" y="262" text-anchor="middle" font-size="10.5" fill="var(--accent)">5 V drive</text>
       <!-- heater block -->
       <rect x="790" y="220" width="120" height="200" rx="4" fill="var(--warn-soft)" stroke="currentColor" stroke-width="1.5"/>
       <text x="850" y="212" text-anchor="middle" font-size="13" font-weight="600" fill="currentColor">Heater block</text>
@@ -308,11 +306,11 @@ footer{margin-top:40px;font-size:12.5px;color:var(--muted);border-top:1px solid 
       <path d="M843 380 H800 M843 390 H800" stroke="var(--warn)" stroke-width="1.6"/>
       <path d="M480 375 H790" stroke="var(--warn)" stroke-width="2" fill="none"/>
       <path d="M480 395 H790" stroke="var(--warn)" stroke-width="2" fill="none" stroke-dasharray="5 3"/>
-      <text x="635" y="368" text-anchor="middle" font-size="10.5" fill="var(--warn)">K-type + (yellow*) · − (red*) — keep 30 mm from mains</text>
+      <text x="635" y="368" text-anchor="middle" font-size="10.5" fill="var(--warn)">K-type + (yellow*) · − (red*) — keep away from motor wires</text>
       <text x="745" y="322" text-anchor="middle" font-size="10" fill="currentColor">heater −</text>
     </svg>
     </div>
-    <figcaption>The SSR switches the heater's <b>low side</b>: +12 V goes straight to the heater, and the SSR connects the heater's other lead to 0 V. Dots mark joins, and wires that cross without a dot aren't connected. *Thermocouple colours vary by maker. If the reading <i>drops</i> as the block heats, swap 9 and 10. Polarity is also printed on the REX side label, so trust the label over this drawing.</figcaption>
+    <figcaption>The SSR switches the heater's <b>low side</b>: +12 V goes straight to the heater, and the SSR connects the heater's other lead to 0 V. Dots mark joins, and wires that cross without a dot aren't connected. *Thermocouple colours vary by maker. If the reading <i>drops</i> as the block heats, swap T+ and T− on the MAX6675. The controller now runs entirely on 12 V, so only the SMPS touches mains.</figcaption>
   </figure>
 
   <div class="sec-head"><div class="eyebrow">Electrical · drawing B of 2</div><h2>Circuit: puller, blade height &amp; fan</h2></div>
@@ -372,7 +370,7 @@ footer{margin-top:40px;font-size:12.5px;color:var(--muted);border-top:1px solid 
       <text x="765" y="270" text-anchor="middle" font-size="10" fill="var(--muted)">rest: both NC → motor braked</text>
     </svg>
     </div>
-    <figcaption>At rest, both motor leads sit on 0 V through the NC contacts, so the N20 is braked and holds the blade height. Pressing <b>+</b> moves one lead to +12 V and the blade travels one way. Pressing <b>−</b> reverses it. Pressing both just brakes the motor, so nothing shorts. No driver board is needed. Solder a 100 nF ceramic capacitor across each motor's terminals to cut the electrical noise that can upset the REX reading.</figcaption>
+    <figcaption>At rest, both motor leads sit on 0 V through the NC contacts, so the N20 is braked and holds the blade height. Pressing <b>+</b> moves one lead to +12 V and the blade travels one way. Pressing <b>−</b> reverses it. Pressing both just brakes the motor, so nothing shorts. No driver board is needed. Solder a 100 nF ceramic capacitor across each motor's terminals to cut the electrical noise that can upset the temperature reading.</figcaption>
   </figure>
 </section>
 
@@ -383,17 +381,21 @@ footer{margin-top:40px;font-size:12.5px;color:var(--muted);border-top:1px solid 
     <table class="term">
       <thead><tr><th>From</th><th>To</th><th>Wire</th><th>Notes</th></tr></thead>
       <tbody>
-        <tr><td>IEC L (after switch + fuse)</td><td>SMPS L · REX 1</td><td><span class="swatch" style="background:var(--wire-l)"></span>0.75 mm² brown</td><td>Ferrules on every screw terminal. Fuse: T2A slow-blow.</td></tr>
-        <tr><td>IEC N</td><td>SMPS N · REX 2</td><td><span class="swatch" style="background:var(--wire-n)"></span>0.75 mm² blue</td><td>REX-C100 runs on 100–240 V AC. Don't feed it 12 V.</td></tr>
+        <tr><td>IEC L (after switch + fuse)</td><td>SMPS L</td><td><span class="swatch" style="background:var(--wire-l)"></span>0.75 mm² brown</td><td>Ferrules on every screw terminal. Fuse: T2A slow-blow.</td></tr>
+        <tr><td>IEC N</td><td>SMPS N</td><td><span class="swatch" style="background:var(--wire-n)"></span>0.75 mm² blue</td><td>The SMPS is the only part on mains.</td></tr>
         <tr><td>IEC E</td><td>SMPS ⏚</td><td><span class="swatch" style="background:var(--wire-e)"></span>0.75 mm² green</td><td>Earth the metal SMPS case. Never skip this.</td></tr>
         <tr><td>SMPS V+</td><td>7.5 A blade fuse → +12 V rail</td><td>18 AWG red silicone</td><td>Feeds the heater, rocker/PWM, microswitch NOs and fan.</td></tr>
         <tr><td>SMPS V−</td><td>0 V rail · SSR OUT− · PWM IN− · NCs · fan −</td><td>18 AWG black</td><td>Single star point at the SMPS V− screw.</td></tr>
-        <tr><td>REX 4 (+)</td><td>SSR IN+ (3)</td><td>22 AWG</td><td>About 12 V DC drive. A DD relay accepts 3–32 V.</td></tr>
-        <tr><td>REX 5 (−)</td><td>SSR IN− (4)</td><td>22 AWG</td><td></td></tr>
+        <tr><td>+12 V rail / 0 V</td><td>Nano VIN / GND</td><td>22 AWG</td><td>The Nano's regulator makes 5 V for the MAX6675, display and pot.</td></tr>
+        <tr><td>Nano D9</td><td>SSR IN+ (3)</td><td>22 AWG</td><td>5 V logic drive. A DD relay accepts 3–32 V.</td></tr>
+        <tr><td>Nano GND</td><td>SSR IN− (4)</td><td>22 AWG</td><td></td></tr>
+        <tr><td>MAX6675 SO / CS / SCK / VCC / GND</td><td>Nano D12 / D10 / D13 / 5V / GND</td><td>Jumpers</td><td>Supplied with the module.</td></tr>
+        <tr><td>TM1637 CLK / DIO / VCC / GND</td><td>Nano D2 / D3 / 5V / GND</td><td>Jumpers</td><td></td></tr>
+        <tr><td>10k pot: ends / wiper</td><td>5V and GND / A0</td><td>22 AWG</td><td>Sets 150–250 °C.</td></tr>
         <tr><td>+12 V rail</td><td>Heater lead A</td><td>18 AWG silicone</td><td>The heater draws 3.3 A. Use silicone wire for the last 15 cm near the block.</td></tr>
         <tr><td>Heater lead B</td><td>SSR OUT+</td><td>18 AWG silicone</td><td>Current flows in at OUT+ and out at OUT−.</td></tr>
         <tr><td>SSR OUT−</td><td>0 V rail</td><td>18 AWG black</td><td></td></tr>
-        <tr><td>K-probe + / −</td><td>REX 9 / 10 (check label)</td><td>Probe's own lead</td><td>Don't extend it with copper wire. If it's too short, buy a longer probe.</td></tr>
+        <tr><td>K-probe + / −</td><td>MAX6675 T+ / T−</td><td>Probe's own lead</td><td>Don't extend it with copper wire. If it's too short, buy a longer probe.</td></tr>
         <tr><td>+12 V → rocker → PWM IN+</td><td>PWM M+ / M− → JGB37</td><td>22 AWG</td><td>Swap M+/M− if the spool turns the wrong way.</td></tr>
         <tr><td>+12 V → both KW11 NO</td><td>KW11 COM → N20 leads</td><td>22 AWG</td><td>Both NCs go to 0 V. If + and − feel backwards, swap the N20 leads.</td></tr>
       </tbody>
@@ -409,8 +411,8 @@ footer{margin-top:40px;font-size:12.5px;color:var(--muted);border-top:1px solid 
     <li><div><h3>Drill the nozzle to 1.8 mm</h3><ul><li>Start from the 1.2 mm Volcano nozzle (much easier than 0.4 mm). Clamp it in a vice, never in your hand.</li><li>Use a pin vise or a drill on its slowest speed with a drop of oil. Go through in 3–4 pecks and clear the brass chips each time.</li><li>Lightly chamfer the <i>entry</i> side so the strip folds smoothly. Keep the exit edge sharp.</li></ul></div></li>
     <li><div><h3>Build the hot end</h3><ul><li>Screw the nozzle into the V6 block. Slide the 40 W cartridge into the 6 mm bore and lock it with the block's grub/clamp screw.</li><li>Put the K-type bead in the 3 mm sensor hole, or under the M3 clamp screw, and hold it with Kapton. Good bead contact is what keeps the temperature steady.</li><li>Mount the block on your printed <span class="mono">Thermocontroller</span> part with M3 screws and a <b>≥5 mm air gap</b>. PLA softens at about 60 °C, so the block must never touch plastic.</li></ul></div></li>
     <li><div><h3>Base, cutter and puller</h3><ul><li>Lay out the printed parts on a 450 × 140 mm ply or MDF board in a straight line: cutter → hot end → spool. Fix them with wood screws.</li><li>Cutter gearbox: two M8 × 35 bolts and M3 screws. Grease the worm with Vaseline, as the original build does.</li><li>Fit the N20 in the cutter motor bracket and the JGB37 in the puller mount. Snap two 9 mm blade segments into the holders.</li></ul></div></li>
-    <li><div><h3>Mains wiring, then test with nothing connected</h3><ul><li>Wire IEC → SMPS → REX following drawing A. Close the cover before you plug in.</li><li>Switch on and measure SMPS V+ to V− with your multimeter. Expect 12.0 V; trim with the SMPS pot if it's off. The REX display should light up.</li></ul></div></li>
-    <li><div><h3>Heater loop</h3><ul><li>Connect REX 4/5 → SSR input and the heater through the SSR. Set SV = 100 °C first.</li><li>The SSR LED should come on and the reading should rise. If it falls, swap the thermocouple leads. At 100 °C, confirm the block holds steady before going higher.</li></ul></div></li>
+    <li><div><h3>Mains wiring, then test with nothing connected</h3><ul><li>Wire IEC → SMPS following drawing A. Close the cover before you plug in.</li><li>Switch on and measure SMPS V+ to V− with your multimeter. Expect 12.0 V; trim with the SMPS pot if it's off.</li></ul></div></li>
+    <li><div><h3>Heater loop</h3><ul><li>Flash <span class="mono">selvi_heater_controller.ino</span> over USB first. Then wire the Nano, MAX6675, display, pot and SSR, and put the heater through the SSR. Turn the pot to its minimum (150 °C).</li><li>The SSR LED should come on and the reading should rise. If it falls, swap the thermocouple leads. At 150 °C, confirm the block holds steady before going higher.</li></ul></div></li>
     <li><div><h3>Motors and switches</h3><ul><li>Wire drawing B. Turn the PWM knob to minimum, flip the rocker, and raise speed until the spool turns slowly in the winding direction.</li><li>Press <b>+</b> and <b>−</b> and confirm the blade moves both ways. Stop before the blade holder hits either end.</li></ul></div></li>
     <li><div><h3>Set the strip width</h3><ul><li>Measure the bottle wall (see Calculators) and set the blade height to the calculated width, usually about 7–8 mm. Check it with a ruler on a test cut.</li></ul></div></li>
     <li><div><h3>First pull</h3><ul><li>Prepare the bottle: remove the label, scrub off the glue with warm soapy water, and cut the bottom off flat. Dented bottles give uneven strips.</li><li>Cut 30 cm of strip by hand, taper the tip to a point, push it through the hot nozzle (215 °C) and tie it to the spool. Start the puller slowly.</li></ul></div></li>
@@ -456,15 +458,178 @@ footer{margin-top:40px;font-size:12.5px;color:var(--muted);border-top:1px solid 
       <p class="note">These are starting points taken from the reference builds (the Tylman Design video runs at 200 °C). Tune them on your own bottles and change one variable at a time.</p>
     </div>
     <div class="plate">
-      <h3>REX-C100 setup</h3>
+      <h3>Heater controller setup</h3>
       <ul class="tight" style="margin-top:10px">
-        <li>At power-up the display flashes the input type and range. Confirm <b>K</b> and <b>0–400</b>.</li>
-        <li>Set SV with the arrow keys to 215.</li>
-        <li><b>Autotune:</b> hold <b>SET</b> about 3 s to enter the menu, step with SET to <span class="mono">AT</span>, set it to 1 and exit. The AT LED blinks for 10–20 minutes while it learns the block. Run it with the block mounted and the fan in its final position.</li>
-        <li>Menus differ slightly between clones. If yours doesn't match, the sheet in the box wins.</li>
-        <li>Aim for ±2 °C at a steady state. If it swings ±10 °C, improve the bead contact and run AT again.</li>
+        <li>Install two libraries in the Arduino IDE: <b>MAX6675 library</b> (Adafruit) and <b>TM1637</b> (Avishay Orpaz). Board: Arduino Nano. Processor: ATmega328P.</li>
+        <li>Turn the pot to set 150–250 °C. The display shows the setpoint for 2 s, then the live temperature.</li>
+        <li><b>Tuning:</b> open the Serial Plotter at 115200 to see setpoint, temperature and heater %. Start with Kp 6, Ki 0.15, Kd 25. Adjust Kp, then Kd, then Ki, following the notes at the end of the sketch.</li>
+        <li><b>Safety cut-outs</b> latch the heater off until reset. <span class="mono">Err1</span> means the probe is open. <span class="mono">Err2</span> means over 265 °C. <span class="mono">Err3</span> means 60 s at full power with less than 5 °C rise, so the probe has fallen off.</li>
+        <li>Aim for ±2 °C at a steady state with the puller and fan running.</li>
       </ul>
     </div>
+  </div>
+</section>
+
+<!-- FIRMWARE -->
+<section id="firmware">
+  <div class="sec-head"><div class="eyebrow">Arduino Nano · selvi_heater_controller.ino</div><h2>Heater firmware</h2></div>
+  <p>PID control with a 1 s SSR window, pot setpoint, a 4-digit display and three latched safety cut-outs. It passes a syntax check but hasn't been run on hardware yet, so do your first heat-up at 150 °C while you watch the block.</p>
+  <div class="plate" style="display:grid;gap:10px">
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap"><button id="copyFw" type="button" style="font:500 13px var(--f-mono);padding:8px 12px;border:1px solid var(--accent);background:var(--accent-soft);color:var(--ink);border-radius:4px;cursor:pointer">Copy code</button><span id="copyMsg" class="note" style="margin:0"></span></div>
+    <pre id="fw" style="margin:0;max-height:420px;overflow:auto;font:12.5px/1.5 var(--f-mono);background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:12px">/*
+  Selvi Filament Machine – heater controller (replaces REX-C100)
+  DharaLabs · v1.0 · Oct 2026
+
+  Hardware
+    Arduino Nano (ATmega328P, CH340), powered from +12 V into VIN
+    MAX6675 + K-type thermocouple   SO=D12  CS=D10  SCK=D13  VCC=5V  GND
+    TM1637 4-digit display          CLK=D2  DIO=D3              VCC=5V  GND
+    10k potentiometer (setpoint)    ends 5V/GND, wiper=A0
+    SSR-40DD input                  IN+ = D9, IN- = GND  (SSR output switches heater low side)
+
+  Libraries (Arduino IDE &gt; Library Manager)
+    &quot;MAX6675 library&quot; by Adafruit
+    &quot;TM1637&quot; by Avishay Orpaz  (TM1637Display.h)
+
+  Behaviour
+    - Pot sets 150–250 °C in 1 °C steps. Display shows setpoint for 2 s while you turn it,
+      otherwise the live block temperature.
+    - PID with time-proportioning output: a 1 s window, SSR on for (output %) of it.
+    - Safety cut-outs (heater forced OFF, display shows code, latches until reset):
+        Err1  thermocouple open / not connected
+        Err2  over-temperature (&gt; MAX_SAFE_C)
+        Err3  thermal runaway: heater at 100 % for RUNAWAY_S seconds with &lt; 5 °C rise
+              (probe fell off the block, heater wire broken, etc.)
+*/
+
+#include &lt;max6675.h&gt;
+#include &lt;TM1637Display.h&gt;
+
+// ---------- pins ----------
+const uint8_t PIN_TC_SO  = 12;
+const uint8_t PIN_TC_CS  = 10;
+const uint8_t PIN_TC_SCK = 13;
+const uint8_t PIN_DISP_CLK = 2;
+const uint8_t PIN_DISP_DIO = 3;
+const uint8_t PIN_SSR = 9;
+const uint8_t PIN_POT = A0;
+
+// ---------- limits ----------
+const int   SET_MIN_C   = 150;
+const int   SET_MAX_C   = 250;
+const float MAX_SAFE_C  = 265.0;   // hard cut-out
+const unsigned long RUNAWAY_S = 60;
+
+// ---------- PID (output in %, error in °C) ----------
+// Starting values for a 40 W cartridge in a V6 block. Tune: see notes at bottom.
+float Kp = 6.0;     // % per °C
+float Ki = 0.15;    // % per °C·s
+float Kd = 25.0;    // % per (°C/s)
+
+const unsigned long WINDOW_MS = 1000;  // SSR time-proportioning window
+const unsigned long SAMPLE_MS = 250;   // MAX6675 needs &gt;= 220 ms between reads
+
+MAX6675 tc(PIN_TC_SCK, PIN_TC_CS, PIN_TC_SO);
+TM1637Display disp(PIN_DISP_CLK, PIN_DISP_DIO);
+
+float tempC = 0, lastTemp = 0, integral = 0, output = 0;
+int   setC = 215, lastPotSet = -1;
+unsigned long lastSample = 0, windowStart = 0, showSetUntil = 0;
+unsigned long fullSince = 0; float tempAtFull = 0;
+uint8_t fault = 0;
+
+const uint8_t SEG_ERR[] = {
+  SEG_A | SEG_D | SEG_E | SEG_F | SEG_G,  // E
+  SEG_E | SEG_G,                          // r
+  SEG_E | SEG_G,                          // r
+  0
+};
+
+int readSetpoint() {
+  // average 8 reads to steady the pot
+  long sum = 0;
+  for (uint8_t i = 0; i &lt; 8; i++) sum += analogRead(PIN_POT);
+  return map(sum / 8, 0, 1023, SET_MIN_C, SET_MAX_C);
+}
+
+void trip(uint8_t code) {
+  fault = code;
+  digitalWrite(PIN_SSR, LOW);
+}
+
+void setup() {
+  pinMode(PIN_SSR, OUTPUT);
+  digitalWrite(PIN_SSR, LOW);
+  Serial.begin(115200);
+  disp.setBrightness(5);
+  delay(500);                       // MAX6675 power-up
+  setC = readSetpoint();
+  lastPotSet = setC;
+  tempC = lastTemp = tc.readCelsius();
+  windowStart = millis();
+  Serial.println(F(&quot;ms,set,temp,out%&quot;));
+}
+
+void loop() {
+  unsigned long now = millis();
+
+  if (fault) {                      // latched safe state
+    digitalWrite(PIN_SSR, LOW);
+    uint8_t segs[4] = { SEG_ERR[0], SEG_ERR[1], SEG_ERR[2], disp.encodeDigit(fault) };
+    disp.setSegments(segs);
+    delay(200);
+    return;
+  }
+
+  // ---- setpoint from pot (only react to real changes, ±2 °C deadband) ----
+  int s = readSetpoint();
+  if (abs(s - lastPotSet) &gt;= 2) { lastPotSet = s; setC = s; showSetUntil = now + 2000; }
+
+  // ---- sample + PID ----
+  if (now - lastSample &gt;= SAMPLE_MS) {
+    float dt = (now - lastSample) / 1000.0;
+    lastSample = now;
+
+    float t = tc.readCelsius();
+    if (isnan(t)) { trip(1); return; }          // open thermocouple
+    tempC = t;
+    if (tempC &gt; MAX_SAFE_C) { trip(2); return; }
+
+    float err = setC - tempC;
+    float dTemp = (tempC - lastTemp) / dt;      // derivative on measurement (no kick on setpoint change)
+    lastTemp = tempC;
+
+    // conditional integration (anti-windup): only integrate when not saturated
+    float trial = Kp * err + Ki * integral - Kd * dTemp;
+    if ((trial &lt; 100 || err &lt; 0) &amp;&amp; (trial &gt; 0 || err &gt; 0)) integral += err * dt;
+    output = constrain(Kp * err + Ki * integral - Kd * dTemp, 0, 100);
+
+    // ---- thermal runaway watch ----
+    if (output &gt;= 99.5) {
+      if (fullSince == 0) { fullSince = now; tempAtFull = tempC; }
+      else if (now - fullSince &gt; RUNAWAY_S * 1000UL &amp;&amp; tempC - tempAtFull &lt; 5.0) { trip(3); return; }
+    } else fullSince = 0;
+
+    Serial.print(now); Serial.print(&#x27;,&#x27;); Serial.print(setC); Serial.print(&#x27;,&#x27;);
+    Serial.print(tempC, 1); Serial.print(&#x27;,&#x27;); Serial.println(output, 0);
+
+    disp.showNumberDec(now &lt; showSetUntil ? setC : (int)(tempC + 0.5), false);
+  }
+
+  // ---- time-proportioning SSR drive ----
+  if (now - windowStart &gt;= WINDOW_MS) windowStart += WINDOW_MS;
+  digitalWrite(PIN_SSR, (now - windowStart) &lt; (unsigned long)(output * WINDOW_MS / 100.0) ? HIGH : LOW);
+}
+
+/* ---------------- Tuning notes ----------------
+  Open Tools &gt; Serial Plotter at 115200 to watch set / temp / out%.
+  1. Set Ki = 0, Kd = 0. Raise Kp until temp oscillates steadily around the setpoint, then halve it.
+  2. Add Kd until overshoot on a 150 -&gt; 215 step is under ~3 °C.
+  3. Add Ki slowly until the steady-state offset disappears within ~1 min.
+  Target: ±2 °C at 215 °C with the puller running and the fan on.
+  If the reading moves the wrong way when heating, swap the thermocouple wires at the MAX6675 (+/-).
+*/
+</pre>
   </div>
 </section>
 
@@ -474,17 +639,17 @@ footer{margin-top:40px;font-size:12.5px;color:var(--muted);border-top:1px solid 
   <div class="tablebox"><table>
     <thead><tr><th>Symptom</th><th>Likely cause</th><th>Fix</th></tr></thead>
     <tbody>
-      <tr><td>Heater never warms; REX OUT LED is on</td><td>DA relay instead of DD, or the SSR output is reversed</td><td>Use an SSR-xxDD, with current entering OUT+</td></tr>
-      <tr><td>Reading drops as the block heats</td><td>Thermocouple polarity is reversed</td><td>Swap the wires on 9 and 10</td></tr>
-      <tr><td>Display shows HHHH / −−−− / blinking</td><td>Probe open circuit, or the wrong input type</td><td>Check the probe, and confirm K input in the menu</td></tr>
-      <tr><td>Temperature swings ±10 °C</td><td>Poor bead contact, or AT not run</td><td>Kapton the bead tight, then run AT</td></tr>
+      <tr><td>Heater never warms; SSR LED is on</td><td>DA relay instead of DD, or the SSR output is reversed</td><td>Use an SSR-xxDD, with current entering OUT+</td></tr>
+      <tr><td>Reading drops as the block heats</td><td>Thermocouple polarity is reversed</td><td>Swap T+ and T− on the MAX6675</td></tr>
+      <tr><td>Display shows Err1 / Err2 / Err3</td><td>Probe open / over 265 °C / probe off the block</td><td>Fix the cause, then press the Nano reset button</td></tr>
+      <tr><td>Temperature swings ±10 °C</td><td>Poor bead contact, or PID not tuned</td><td>Kapton the bead tight, then lower Kp or raise Kd</td></tr>
       <tr><td>Filament snaps at the nozzle</td><td>Too cold, pulling too fast, or a nicked strip edge</td><td>+5 °C, slow the puller, change the blade</td></tr>
       <tr><td>Filament brown, sticky or bubbly</td><td>Too hot or too slow; PET is degrading</td><td>−5 to −10 °C, speed up a little</td></tr>
       <tr><td>Diameter under 1.70 mm</td><td>Strip too narrow, or pulling too fast</td><td>Widen the strip by 0.5 mm, or slow down</td></tr>
       <tr><td>Diameter over 1.85 mm, or seam open</td><td>Strip too wide, or bore too big</td><td>Narrow the strip; try a new 1.75 mm bore</td></tr>
       <tr><td>Strip width wanders</td><td>Dented or oval bottle, or bottom cut not square</td><td>Dip the bottle in hot water to reshape it, and recut the bottom</td></tr>
       <tr><td>SMPS clicks or resets when the motor starts</td><td>Short or stalled motor</td><td>Check the motor wiring; free the stalled mechanism</td></tr>
-      <tr><td>REX reading jumps when motors run</td><td>Motor noise on the thermocouple</td><td>100 nF across the motors; route the TC lead away from motor wires</td></tr>
+      <tr><td>Reading jumps when motors run</td><td>Motor noise on the thermocouple</td><td>100 nF across the motors; route the TC lead away from motor wires</td></tr>
     </tbody>
   </table></div>
 </section>
@@ -506,7 +671,7 @@ footer{margin-top:40px;font-size:12.5px;color:var(--muted);border-top:1px solid 
     <div class="plate">
       <h3>Upgrade path (beyond ₹5k)</h3>
       <ul class="tight" style="margin-top:10px">
-                <li><b>ESP32 controller</b>: replaces the PWM board and logs temperature and speed.</li>
+                <li><b>ESP32 controller</b>: an easy port of the Nano firmware. It adds Wi-Fi logging and can also drive the puller instead of the PWM board.</li>
         <li><b>Inline diameter sensor</b> (hall-effect or optical) driving the puller speed in a closed loop. This is what makes ±0.05 mm, sellable filament possible.</li>
         <li><b>Stepper puller</b> (NEMA17 + A4988) for constant line speed.</li>
         <li><b>Drying</b>: PET absorbs moisture, so dry the filament before printing.</li>
@@ -525,7 +690,7 @@ footer{margin-top:40px;font-size:12.5px;color:var(--muted);border-top:1px solid 
 </section>
 
 <footer>
-  <span>References: PETamentor2 by growithjessie (<a href="https://www.printables.com/model/268067-filament-machine-ii-petamentor2" target="_blank" rel="noopener">Printables</a>, <a href="https://petamentor2.com/parts/" target="_blank" rel="noopener">parts list</a>), the JGY370 puller remix by <a href="https://www.printables.com/model/654172-petamentor-2-puller-jgy370" target="_blank" rel="noopener">Biro 3D</a>, the Tylman Design and Creative3DP build videos, and the <a href="https://www.steeman.be/posts/rex-c100-teardown/" target="_blank" rel="noopener">REX-C100 teardown</a> (terminal numbering).</span>
+  <span>References: PETamentor2 by growithjessie (<a href="https://www.printables.com/model/268067-filament-machine-ii-petamentor2" target="_blank" rel="noopener">Printables</a>, <a href="https://petamentor2.com/parts/" target="_blank" rel="noopener">parts list</a>), the JGY370 puller remix by <a href="https://www.printables.com/model/654172-petamentor-2-puller-jgy370" target="_blank" rel="noopener">Biro 3D</a>, the Tylman Design and Creative3DP build videos.</span>
   <span>Prices were checked on 3 Oct 2026 and change often. "Listed" prices came from store metadata and should be confirmed in the cart. Process numbers are starting points, not guarantees.</span>
 </footer>
 </div>
@@ -533,7 +698,10 @@ footer{margin-top:40px;font-size:12.5px;color:var(--muted);border-top:1px solid 
 <script>
 const BOM=[
  {cat:"Heat & temperature control"},
- {id:"rex",n:"REX-C100 PID controller",s:"FK02-V*AN · SSR drive output · K input · 0–400 °C · 100–240 V AC supply",q:1,p:529,st:"Robu",u:"https://robu.in/product/rex-c100-digital-thermostat-temperature-3/",b:"Robu ₹579",bu:"https://robu.in/product/rex-c100-digital-thermostat-temperature-2/",v:"snip",note:"Check the listing says SSR output. Don't buy the kit."},
+ {id:"nano",n:"Arduino Nano V3 (CH340, Type-C)",s:"ATmega328P · runs the PID firmware · powered from 12 V via VIN",q:1,p:263,st:"Zbotic",u:"https://zbotic.in/product/atmega328p-5v-nano-v3-0-development-board-16mhz-ch340-type-c/",b:"Robu Nano CH340",bu:"https://robu.in/?p=30888",v:"ver",note:"Replaces the out-of-stock REX-C100. ₹223 + GST."},
+ {id:"max",n:"MAX6675 module + K-type probe",s:"0–1024 °C · 0.25 °C resolution · SPI · cold-junction compensated",q:1,p:389,st:"Zbotic",u:"https://zbotic.in/product/max6675-module-with-k-type-thermocouple-sensor/",v:"ver",note:"The included probe has an M6 thread, which won't fit the V6 block. Use the bead probe below on the block and keep this one as a spare."},
+ {id:"disp",n:"TM1637 4-digit display",s:"Shows live temperature / setpoint",q:1,p:55,st:"Zbotic",u:"https://zbotic.in/product/tm1637-4-bits-digital-tube-led-display-module-with-clock-displayred/",b:"Probots ₹249",bu:"https://probots.co.in/blue-tm1637-056-inch-4-bit-digital-tube-led-display-module.html",v:"ver"},
+ {id:"pot",n:"10k potentiometer + knob",s:"Setpoint 150–250 °C",q:1,p:15,st:"Local",u:"",v:"est"},
  {id:"ssr",n:"SSR-40DD solid-state relay",s:"DC→DC · input 3–32 V · output 5–200 V DC",q:1,p:449,st:"Robocraze",u:"https://robocraze.com/products/ssr-40dd-dc-3-32v-input-to-dc-5-200v-solid-state-relay",b:"Zbotic SSR-25DD ₹539",bu:"https://zbotic.in/product/fotek-5-60v-ssr-25dd-solid-state-relay/",v:"ver",note:"Must say DD. A DA relay will not switch the 12 V heater."},
  {id:"tc",n:"K-type thermocouple probe",s:"Bead or small probe, 0–800 °C, 1 m lead",q:1,p:69,st:"Robocraze",u:"https://robocraze.com/products/k-type-thermocouple-sensor-probe-0-800-degree-c",b:"Zbotic ₹34",bu:"https://zbotic.in/product/0-to-600-c-surface-thermocouple-k-type-high-temperature-resistance-probe/",v:"ver",note:"Not NTC, not PT100. The M6-thread probes don't fit a V6 block."},
  {id:"htr",n:"Cartridge heater 12 V 40 W",s:"6 × 20 mm ceramic",q:1,p:71,st:"Zbotic",u:"https://zbotic.in/product/12v-40w-ceramic-cartridge-heater/",b:"ElectronicsComp ₹78+GST",bu:"https://www.electronicscomp.com/12v-40w-ceramic-cartridge-heater",v:"ver",note:"12 V and 24 V look the same, so check before ordering."},
@@ -571,7 +739,7 @@ const BOM=[
  {cat:"Optional upgrades (unticked)"},
  {id:"cal",n:"Digital vernier caliper 150 mm",s:"Measures bottle wall and filament diameter",q:1,p:450,st:"Local/Amazon",u:"",v:"est",opt:1,note:"Strongly recommended for quality control."},
 ];
-const KEY="selvi-bom-v2";let state={};
+const KEY="selvi-bom-v3";let state={};
 try{state=JSON.parse(localStorage.getItem(KEY)||"{}")}catch(e){state={}}
 function on(it){return state[it.id]!==undefined?state[it.id]:!it.opt}
 const fmt=n=>"₹"+Math.round(n).toLocaleString("en-IN");
@@ -622,4 +790,8 @@ function calc(){
       document.getElementById("oY").textContent=`One bottle ≈ ${L.toFixed(1)} m of strip → ≈ ${g2.toFixed(0)} g of filament (PET 1.38 g/cm³) in ≈ ${(L/v).toFixed(0)} min at the empty-hub speed.`}}
 }
 ["cT","cD","cHub","cRpm","cBd","cBh"].forEach(id=>document.getElementById(id).addEventListener("input",calc));calc();
+
+document.getElementById("copyFw").addEventListener("click",()=>{const t=document.getElementById("fw").textContent,m=document.getElementById("copyMsg");
+ const sel=()=>{const r=document.createRange();r.selectNodeContents(document.getElementById("fw"));const s=getSelection();s.removeAllRanges();s.addRange(r);m.textContent="Selected. Press Ctrl+C to copy."};
+ try{navigator.clipboard.writeText(t).then(()=>{m.textContent="Copied."},sel)}catch(e){sel()}});
 </script>
